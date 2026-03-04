@@ -18,9 +18,19 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        //updated by users row conditions
         'name',
+        'surname',
+        'username',
         'email',
         'password',
+        'phone',
+        'address',
+        'cap',
+        'province',
+        'bio',
+        'image',
+
     ];
 
     /**
@@ -44,5 +54,22 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    // get the roles that belong to the user model
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')->withTimestamps();
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        return $this->roles()
+            ->whereIn('name', (array) $roles)
+            ->exists();
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
     }
 }
