@@ -8,9 +8,9 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        if(auth()->user()->isAdmin()){
-            return view('admin.dashboard');
+        if(! auth()->user()->isAdmin()){
+            abort(403, 'Non sei autorizzato a vedere questa pagina');
         }
-        abort(403, 'Non sei autorizzato');
+        return view('admin.dashboard');
     }
 }
