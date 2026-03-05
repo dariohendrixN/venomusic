@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Role;
 
 class RegisteredUserController extends Controller
 {
@@ -39,6 +40,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+        ]);
+
+        $observerRole = Role::firstWhere('name', 'observer');
+        $user->roles()->syncWithoutDetaching([
+            $observerRole->id => [
+                'status' => 'auto_approved',
+                'requested_at' => now(),
+            ]
         ]);
 
         event(new Registered($user));
