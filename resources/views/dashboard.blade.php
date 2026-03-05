@@ -14,4 +14,44 @@
             </div>
         </div>
     </div>
+
+    <div class="container mt-5">
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                Richiedi un ruolo
+            </div>
+    
+            <div class="card-body">
+                @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+                @endif
+                <form method="POST" action="{{ route('roles.request') }}">
+                    @csrf
+    
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Seleziona il ruolo</label>
+    
+                        <select name="role" id="role" class="form-select">
+                            <option value="">-- scegli ruolo --</option>
+                            <option value="artist">Artist</option>
+                            <option value="producer">Producer</option>
+                            <option value="studio">Studio</option>
+                            <option value="venue">Venue</option>
+                            <option value="label">Label</option>
+                        </select>
+                    </div>
+    
+                    <button type="submit" class="btn btn-primary">
+                        Invia richiesta
+                    </button>
+    
+                </form>
+    
+            </div>
+        </div>
+    
+    </div>
 </x-app-layout>
