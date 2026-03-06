@@ -17,10 +17,10 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (! $user) {
+        if (!$user) {
             abort(401);
         }
-        if (! $user->hasRole($roles)) {
+        if (!$user->hasRole($roles)) {
             abort(403, 'Non sei autorizzato a utilizzare questa funzione');
         }
         return $next($request);

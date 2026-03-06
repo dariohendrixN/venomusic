@@ -22,7 +22,7 @@ class RoleApprovalController extends Controller
     public function approve(User $user, string $role) {
 
         $roleModel = $user->roles()
-        ->where('name', $role)
+        ->where('roles.name', $role)
         ->wherePivot('status', 'pending')
         ->first();
 
@@ -42,7 +42,7 @@ class RoleApprovalController extends Controller
     public function reject(User $user, string $role) {
 
         $roleModel = $user->roles()
-            ->where('name', $role)
+            ->where('roles.name', $role)
             ->wherePivot('status', 'pending')
             ->first();
 
