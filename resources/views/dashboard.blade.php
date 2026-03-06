@@ -21,19 +21,27 @@
             <div class="card-header">
                 Richiedi un ruolo
             </div>
-    
+
             <div class="card-body">
-                @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
                 @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('roles.request') }}">
                     @csrf
-    
+
                     <div class="mb-3">
                         <label for="role" class="form-label">Seleziona il ruolo</label>
-    
+
                         <select name="role" id="role" class="form-select">
                             <option value="">-- scegli ruolo --</option>
                             <option value="artist">Artist</option>
@@ -43,15 +51,15 @@
                             <option value="label">Label</option>
                         </select>
                     </div>
-    
+
                     <button type="submit" class="btn btn-primary">
                         Invia richiesta
                     </button>
-    
+
                 </form>
-    
+
             </div>
         </div>
-    
+
     </div>
 </x-app-layout>

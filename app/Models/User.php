@@ -65,7 +65,16 @@ class User extends Authenticatable
     {
         return $this->roles()
             ->whereIn('name', (array) $roles)
+            ->wherePivot('status', ['auto_approved', 'manually_approved'])
             ->exists();
+    }
+
+    public function hasPendingRoleRequest(string|array $roles): bool
+    {
+        return $this->roles()
+        ->whereIn('name', (array) $roles)
+        ->wherePivot('status', 'pending')
+        ->exists();
     }
 
     public function isAdmin(): bool

@@ -12,6 +12,19 @@ class RoleRequestController extends Controller
         $request->validate(['role' => ['required', 'string', 'exists:roles,name']]);
 
         $user = $request->user();
+        $requestedRole = $request->role;
+
+        if (in_array($requestedRole, ['admin', 'observer'])) {
+            return back()->with('error', 'Non puoi richiedere il ruolo di ' . $requestedRole);
+        }
+
+        if ($user->hasRole($requestedRole)) {
+            return back()->with('error', 'Sei già un ' . $requestedRole);
+        }
+
+        if ($user->hasPendingRoleRequest($requestedRole)) {
+            return back()->with('error', 'Hai già una richiesta per il ruolo di ' . $requestedRole);
+        }
 
         $roleId = Role::where('name', $request->role)->value('id');
 
