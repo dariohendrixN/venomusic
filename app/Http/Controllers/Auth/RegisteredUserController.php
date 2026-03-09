@@ -42,14 +42,11 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $observerRole = Role::firstWhere('name', 'observer');
-        $user->roles()->syncWithoutDetaching([
-            $observerRole->id => [
-                'status' => 'auto_approved',
-                'requested_at' => now(),
-            ]
+        $user->assignRole('observer', [
+            'status' => 'auto_approved',
+            'requested_at' => now(),
         ]);
-
+        
         event(new Registered($user));
 
         Auth::login($user);

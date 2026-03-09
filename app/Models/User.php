@@ -48,37 +48,48 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
+    protected function casts(): array{
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
     // get the roles that belong to the user model
-    public function roles()
-    {
+    public function roles() {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')->withTimestamps();
     }
 
-    public function hasRole(string|array $roles): bool
-    {
+    public function hasRole(string|array $roles): bool{
         return $this->roles()
             ->whereIn('name', (array) $roles)
             ->wherePivot('status', ['auto_approved', 'manually_approved'])
             ->exists();
     }
 
-    public function hasPendingRoleRequest(string|array $roles): bool
-    {
+    public function hasPendingRoleRequest(string|array $roles): bool{
         return $this->roles()
-        ->whereIn('name', (array) $roles)
-        ->wherePivot('status', 'pending')
-        ->exists();
+            ->whereIn('name', (array) $roles)
+            ->wherePivot('status', 'pending')
+            ->exists();
+    }
+    public function assignRole(string $roleName, array $pivotData = []): void{
+        $roleId = \App\Models\Role::where('name', $roleName)->value('id');
+
+        $this->roles()
+            ->syncWithoutDetaching([$roleId => $pivotData]);
     }
 
-    public function isAdmin(): bool
-    {
+    public function activeRoles(){
+        return $this->roles()
+            ->wherePivotIn('status', ['auto_approved', 'manually_approved']);
+    }
+
+    public function pendingRoles(){
+        return $this->roles()
+            ->wherePivot('status', 'pending');
+    }
+
+    public function isAdmin(): bool{
         return $this->hasRole('admin');
     }
 }
