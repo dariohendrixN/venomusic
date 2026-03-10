@@ -46,6 +46,11 @@ class RegisteredUserController extends Controller
             'status' => 'auto_approved',
             'requested_at' => now(),
         ]);
+
+        $user->profile()->create([
+            'display_name' => $user->name,
+            'country' => 'Italy',
+        ]);
         
         event(new Registered($user));
 

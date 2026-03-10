@@ -92,4 +92,9 @@ class User extends Authenticatable
     public function isAdmin(): bool{
         return $this->hasRole('admin');
     }
+
+    public function profile(){
+        return $this->hasOne(UserProfile::class);
+    }
+    
 }
