@@ -38,6 +38,8 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'surname' => $request->surname,
+            'display_name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -48,7 +50,14 @@ class RegisteredUserController extends Controller
         ]);
 
         $user->profile()->create([
+            'name' => $user->name,
+            'surname' => $user->surname,
             'display_name' => $user->name,
+            'address' => null,
+            'city' => null,
+            'province' => null,
+            'region' => null,
+            'phone' => null,
             'country' => 'Italy',
         ]);
         

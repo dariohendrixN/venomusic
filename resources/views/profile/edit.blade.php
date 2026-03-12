@@ -90,18 +90,33 @@
                         @enderror
                     </div>
     
-                    <hr class="my-4">
-    
+                    
                     <div class="mb-3">
-                        <label for="display_name" class="form-label">Nome visualizzato</label>
+                        <label for="display_name" class="form-label">Alias</label>
+                        <input
+                        type="text"
+                        class="form-control"
+                        id="display_name"
+                        name="display_name"
+                        value="{{ old('display_name', $profile->display_name) }}"
+                        >
+                        @error('display_name')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Indirizzo</label>
                         <input
                             type="text"
                             class="form-control"
-                            id="display_name"
-                            name="display_name"
-                            value="{{ old('display_name', $profile->display_name) }}"
+                            id="address"
+                            name="address"
+                            value="{{ old('address', $profile->address) }}"
                         >
-                        @error('display_name')
+                        @error('address')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
@@ -144,6 +159,20 @@
                             value="{{ old('region', $profile->region) }}"
                         >
                         @error('region')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Numero di telefono</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="phone"
+                            name="phone"
+                            value="{{ old('phone', $profile->phone) }}"
+                        >
+                        @error('phone')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>

@@ -11,11 +11,15 @@ class UserProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'name',
+        'surname',
         'display_name',
+        'address', 
         'city',
         'province',
         'region',
         'country',
+        'phone',
         'profile_image'
     ];
 

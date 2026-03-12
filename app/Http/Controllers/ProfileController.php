@@ -32,6 +32,7 @@ class ProfileController extends Controller
             'surname' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string',  'lowercase', 'email', 'max:255'],
             'display_name' => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
@@ -39,19 +40,19 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        $user->fill([
-            'name' => $validated['name'],
-            'surname' => $validated['surname'] ?? null,
+        $user->update([
             'email' => $validated['email'],
         ]);
 
-        $user->save();
-
         $user->profile()->update([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'],
             'display_name' => $validated['display_name'],
+            'address' => $validated['address'] ?? null,
             'city' => $validated['city'] ?? null,
             'province' => $validated['province'] ?? null,
             'region' => $validated['region'] ?? null,
+            'phone' => $validated['phone'] ?? null,
         ]);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
