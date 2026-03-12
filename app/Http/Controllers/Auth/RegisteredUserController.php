@@ -53,11 +53,6 @@ class RegisteredUserController extends Controller
             'name' => $user->name,
             'surname' => $user->surname,
             'display_name' => $user->name,
-            'address' => null,
-            'city' => null,
-            'province' => null,
-            'region' => null,
-            'phone' => null,
             'country' => 'Italy',
         ]);
         

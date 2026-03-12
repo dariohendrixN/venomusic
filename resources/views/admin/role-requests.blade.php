@@ -30,6 +30,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Utente</th>
+                    <th>Alias</th>
                     <th>Email</th>
                     <th>Ruolo/i attivo/i</th>
                     <th>Ruolo richiesto</th>
@@ -44,7 +45,8 @@
 
                     @foreach($user->roles->where('pivot.status','pending') as $role)
                         <tr>
-                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->fullName() }} </td>
+                            <td>{{ $user->profile->display_name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
                                 

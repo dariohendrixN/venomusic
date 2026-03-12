@@ -12,7 +12,9 @@ class RoleApprovalController extends Controller
         
         $users = User::whereHas('roles', function ($query) {
             $query->where('user_roles.status', 'pending');
-        })->with(['roles'])->get();
+        })
+        ->with(['roles', 'profile'])
+        ->get();
         
         return view('admin.role-requests', compact('users'));
     }

@@ -73,6 +73,7 @@ class User extends Authenticatable
             ->exists();
     }
     public function assignRole(string $roleName, array $pivotData = []): void{
+
         $roleId = \App\Models\Role::where('name', $roleName)->value('id');
 
         $this->roles()
@@ -96,5 +97,13 @@ class User extends Authenticatable
     public function profile(){
         return $this->hasOne(UserProfile::class);
     }
+
+    public function fullName(): string{
+
+    $name = $this->profile?->name ?? '';
+    $surname = $this->profile?->surname ?? '';
+
+    return trim($name . ' ' . $surname);
+}
     
 }
