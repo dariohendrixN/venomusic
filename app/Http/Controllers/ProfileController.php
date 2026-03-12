@@ -18,21 +18,41 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'profile' => $request->user()->profile,
         ]);
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'surname' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string',  'lowercase', 'email', 'max:255'],
+            'display_name' => ['required', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'province' => ['nullable', 'string', 'max:255'],
+            'region' => ['nullable', 'string', 'max:255'],
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        $user = $request->user();
 
-        $request->user()->save();
+        $user->fill([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'] ?? null,
+            'email' => $validated['email'],
+        ]);
+
+        $user->save();
+
+        $user->profile()->update([
+            'display_name' => $validated['display_name'],
+            'city' => $validated['city'] ?? null,
+            'province' => $validated['province'] ?? null,
+            'region' => $validated['region'] ?? null,
+        ]);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

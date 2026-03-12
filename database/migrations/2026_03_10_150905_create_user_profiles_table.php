@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('display_name');
             $table->string('city')->nullable();
             $table->string('province')->nullable();
+            $table->string('region')->nullable();
             $table->string('country')->default('Italy');
             $table->string('profile_image')->nullable();
             $table->timestamps();

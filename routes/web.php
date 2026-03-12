@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\RoleApprovalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleRequestController;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +30,6 @@ Route::get('/admin', [AdminController::class, 'dashboard'])
 ->middleware(['auth', 'role:admin'])
 ->name('admin.dashboard');
 
-use App\Http\Controllers\Admin\RoleApprovalController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/role-requests', [RoleApprovalController::class, 'index'])
