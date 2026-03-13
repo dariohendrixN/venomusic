@@ -55,7 +55,7 @@
                             class="form-control"
                             id="name"
                             name="name"
-                            value="{{ old('name', $user->name) }}"
+                            value="{{ old('name', $user->profile->name) }}"
                         >
                         @error('name')
                             <div class="text-danger small">{{ $message }}</div>
@@ -69,7 +69,7 @@
                             class="form-control"
                             id="surname"
                             name="surname"
-                            value="{{ old('surname', $user->surname) }}"
+                            value="{{ old('surname', $user->profile->surname) }}"
                         >
                         @error('surname')
                             <div class="text-danger small">{{ $message }}</div>

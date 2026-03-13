@@ -19,17 +19,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         //updated by users row conditions
-        'name',
-        'surname',
-        'username',
         'email',
         'password',
-        'phone',
-        'address',
-        'cap',
-        'province',
-        'bio',
-        'image',
 
     ];
 
