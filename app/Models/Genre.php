@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\UserProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
+    use HasFactory;
+    
     protected $fillable = [
         'name',
         'slug',
@@ -22,6 +25,6 @@ class Genre extends Model
     }
 
     public function profiles() {
-        return $this->belongsToMany(UserProfile::class, 'genre_profile');
+        return $this->belongsToMany(UserProfile::class, 'genre_profile', 'genre_id', 'user_profile_id');
     }
 }

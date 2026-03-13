@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Genre;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +29,7 @@ class UserProfile extends Model
     }
 
     public function genres(){
-        return $this->belongsToMany(Genre::class, 'genre_profile');
+        return $this->belongsToMany(Genre::class, 'genre_profile', 'user_profile_id', 'genre_id')
+            ->withTimestamps();
     }
 }
