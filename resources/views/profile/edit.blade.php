@@ -33,12 +33,44 @@
             </div>
         </div> --}}
     </div>
-
+    
     <br>
-
-    <div class="container mt-5">
+    
+    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+        @csrf
+        @method('PATCH')
+    <div class="container my-5">
+        <div class="card mb-3" >
+            <div class="row g-0">
+                <div class="col-md-4 d-flex align-items-center text-center">
+                    @if ($profile->profile_image)
+                    <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
+                    class="img-thumbnail" style="max-width: 300px;">
+                    @else
+                    <p class="text-muted ms-3">Nessuna immagine caricata</p>
+                    @endif
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h3 class="card-title my-4">
+                            <label class="form-label">--> Immagine profilo attuale</label><br>
+                        </h3>
+                        
+                        <label for="profile_image" class="form-label text-center">Carica nuova immagine profilo</label>
+                        
+                        <input type="file" class="form-control" id="profile_image" name="profile_image"
+                        accept=".jpg,.jpeg,.png,.webp">
+                        <p class="card-text">
+                            @error('profile_image')
+                            <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
         <details class="card shadow-sm">
-
             <summary class="card-header" style="cursor: pointer;">
                 Modifica profilo
             </summary>
@@ -46,10 +78,19 @@
 
             <div class="card-body">
 
-                <form method="POST" action="{{ route('profile.update') }}">
-                    @csrf
-                    @method('PATCH')
+                {{-- <div class="mb-3">
+                    <label class="form-label">Immagine profilo attuale</label><br>
 
+                    @if ($profile->profile_image)
+                        <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
+                            class="img-thumbnail" style="max-width: 200px;">
+                    @else
+                        <p class="text-muted">Nessuna immagine caricata</p>
+                    @endif
+                </div>
+                 --}}
+
+                 
                     <div class="mb-3">
                         <label for="name" class="form-label">Nome</label>
                         <input type="text" class="form-control" id="name" name="name"
@@ -132,13 +173,18 @@
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <button type="submit" class="btn btn-success">
+                    {{-- <button type="submit" class="btn btn-success">
                         Salva modifiche
-                    </button>
+                    </button> --}}
                 </form>
             </div>
+            
         </details>
+            <div class ="card-footer d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-success">
+                    Salva modifiche
+                </button>
+            </div>
         <h4 class="mt-4">Generi musicali</h4>
 
         <input type="text" id="genre-search" class="form-control" placeholder="Cerca genere...">
@@ -160,48 +206,48 @@
             @endforeach
         </div>
     </div>
-    
+
     {{-- scripts --}}
     <script>
         const input = document.getElementById('genre-search');
         const box = document.getElementById('genre-suggestions');
-        
+
         input.addEventListener('keyup', async () => {
-            
+
             let q = input.value;
-            
-            if(q.length < 2){
+
+            if (q.length < 2) {
                 box.innerHTML = '';
                 return;
             }
-            
+
             let res = await fetch(`/genres/search?q=${encodeURIComponent(q)}`);
             let data = await res.json();
-            
+
             box.innerHTML = '';
-            
+
             data.forEach(g => {
-                
+
                 let item = document.createElement('a');
-                item.classList.add('list-group-item','list-group-item-action');
+                item.classList.add('list-group-item', 'list-group-item-action');
                 item.innerText = g.name;
-                
+
                 item.onclick = () => {
-                    
+
                     let form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '/profile/genres';
-                    
+
                     form.innerHTML =
-                    `<input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        `<input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="genre_id" value="${g.id}">`;
-                    
+
                     document.body.appendChild(form);
                     form.submit();
                 };
-                
+
                 box.appendChild(item);
             });
         });
-        </script>
-        </x-app-layout>
+    </script>
+</x-app-layout>

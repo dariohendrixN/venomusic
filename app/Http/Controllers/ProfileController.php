@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -37,15 +38,17 @@ class ProfileController extends Controller
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $user = $request->user();
+        $profile = $user->profile;
 
         $user->update([
             'email' => $validated['email'],
         ]);
 
-        $user->profile()->update([
+        $profileData = [
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'display_name' => $validated['display_name'],
@@ -54,7 +57,17 @@ class ProfileController extends Controller
             'province' => $validated['province'] ?? null,
             'region' => $validated['region'] ?? null,
             'phone' => $validated['phone'] ?? null,
-        ]);
+        ];
+
+        if ($request->hasFile('profile_image')) {
+            if ($profile->profile_image) {
+                Storage::disk('public')->delete($profile->profile_image);
+            }
+
+            $profileData['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        }
+
+        $profile->update($profileData);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
