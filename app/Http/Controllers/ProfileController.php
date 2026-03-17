@@ -17,6 +17,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user()->load('profile.images');
         return view('profile.edit', [
             'user' => $request->user(),
             'profile' => $request->user()->profile,

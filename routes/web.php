@@ -2,10 +2,11 @@
 
 use App\Http\Controllers\Admin\RoleApprovalController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DiscoverController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileGenreController;
-use App\Http\Controllers\DiscoverController;
+use App\Http\Controllers\ProfileImageController;
 use App\Http\Controllers\RoleRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,14 @@ Route::get('/discover', [DiscoverController::class, 'index'])
 
 Route::get('/discover/search', [DiscoverController::class, 'search'])
     ->name('discover.search');
+
+Route::post('/profile/images', [ProfileImageController::class, 'store'])
+    ->middleware('auth')
+    ->name('profile.images.store');
+
+Route::delete('/profile/images/{image}', [ProfileImageController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('profile.images.destroy');
 
 // Route::get('/discover/{genre}', [DiscoverController::class, 'search'])
 //     ->name('discover.search');

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Genre;
+use App\Models\ProfileImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -35,5 +36,9 @@ class UserProfile extends Model
 
     public function syncGenres(array $genreIds): void {
         $this->genres()->sync($genreIds);
+    }
+
+    public function images() {
+        return $this->hasMany(ProfileImage::class, 'user_profile_id');
     }
 }

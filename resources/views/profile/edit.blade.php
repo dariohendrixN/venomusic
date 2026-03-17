@@ -33,64 +33,51 @@
             </div>
         </div> --}}
     </div>
-    
+
     <br>
-    
+
     <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
-    <div class="container my-5">
-        <div class="card mb-3" >
-            <div class="row g-0">
-                <div class="col-md-4 d-flex align-items-center text-center">
-                    @if ($profile->profile_image)
-                    <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
-                    class="img-thumbnail" style="max-width: 300px;">
-                    @else
-                    <p class="text-muted ms-3">Nessuna immagine caricata</p>
-                    @endif
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h3 class="card-title my-4">
-                            <label class="form-label">--> Immagine profilo attuale</label><br>
-                        </h3>
-                        
-                        <label for="profile_image" class="form-label text-center">Carica nuova immagine profilo</label>
-                        
-                        <input type="file" class="form-control" id="profile_image" name="profile_image"
-                        accept=".jpg,.jpeg,.png,.webp">
-                        <p class="card-text">
-                            @error('profile_image')
-                            <div class="text-danger small">{{ $message }}</div>
+        <div class="container my-5">
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4 d-flex align-items-center text-center">
+                        @if ($profile->profile_image)
+                            <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
+                                class="img-thumbnail" style="max-width: 300px;">
+                        @else
+                            <p class="text-muted ms-3">Nessuna immagine caricata</p>
+                        @endif
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title my-4">
+                                <label class="form-label">--> Immagine profilo attuale</label><br>
+                            </h3>
+
+                            <label for="profile_image" class="form-label text-center">Carica nuova immagine
+                                profilo</label>
+
+                            <input type="file" class="form-control" id="profile_image" name="profile_image"
+                                accept=".jpg,.jpeg,.png,.webp">
+                            <p class="card-text">
+                                @error('profile_image')
+                                <div class="text-danger small">{{ $message }}</div>
                             @enderror
-                        </p>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    
-        <details class="card shadow-sm">
-            <summary class="card-header" style="cursor: pointer;">
-                Modifica profilo
-            </summary>
+
+            <details class="card shadow-sm">
+                <summary class="card-header" style="cursor: pointer;">
+                    Modifica profilo
+                </summary>
 
 
-            <div class="card-body">
-
-                {{-- <div class="mb-3">
-                    <label class="form-label">Immagine profilo attuale</label><br>
-
-                    @if ($profile->profile_image)
-                        <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
-                            class="img-thumbnail" style="max-width: 200px;">
-                    @else
-                        <p class="text-muted">Nessuna immagine caricata</p>
-                    @endif
-                </div>
-                 --}}
-
-                 
+                <div class="card-body">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nome</label>
                         <input type="text" class="form-control" id="name" name="name"
@@ -173,39 +160,102 @@
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
-                    {{-- <button type="submit" class="btn btn-success">
-                        Salva modifiche
-                    </button> --}}
-                </form>
-            </div>
-            
-        </details>
+                </div>
+
+            </details>
             <div class ="card-footer d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-success">
                     Salva modifiche
                 </button>
             </div>
-        <h4 class="mt-4">Generi musicali</h4>
+            <h4 class="mt-4">Generi musicali</h4>
 
-        <input type="text" id="genre-search" class="form-control" placeholder="Cerca genere...">
+            <input type="text" id="genre-search" class="form-control" placeholder="Cerca genere...">
 
-        <div id="genre-suggestions" class="list-group mt-2"></div>
+            <div id="genre-suggestions" class="list-group mt-2"></div>
 
-        <div class="mt-3">
-            <strong>I tuoi generi:</strong>
+            <div class="mt-3">
+                <strong>I tuoi generi:</strong>
 
-            @foreach (auth()->user()->profile->genres as $genre)
-                <form method="POST" action="{{ route('profile.genres.destroy', $genre) }}" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <span class="badge bg-primary d-inline-flex align-items-center">
-                        {{ $genre->name }}
-                        <button class="btn btn-sm btn-primary">x</button>
-                    </span>
-                </form>
-            @endforeach
+                @foreach (auth()->user()->profile->genres as $genre)
+                    <form method="POST" action="{{ route('profile.genres.destroy', $genre) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <span class="badge bg-primary d-inline-flex align-items-center">
+                            {{ $genre->name }}
+                            <button class="btn btn-sm btn-primary">x</button>
+                        </span>
+                    </form>
+                @endforeach
+            </div>
+
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header">
+                    Gallery immagini
+                </div>
+
+                <div class="card-body">
+                    @if (session('status') === 'gallery-updated')
+                        <div class="alert alert-success">
+                            Gallery aggiornata correttamente.
+                        </div>
+                    @endif
+
+                    @if (session('status') === 'gallery-image-deleted')
+                        <div class="alert alert-success">
+                            Immagine rimossa correttamente.
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('profile.images.store') }}" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label for="images" class="form-label">Carica immagini</label>
+                            <input type="file" class="form-control" id="images" name="images[]"
+                                accept=".jpg,.jpeg,.png,.webp" multiple>
+                            @error('images')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                            @error('images.*')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Carica immagini
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="row mt-4">
+                @forelse($profile->images as $image)
+                    <div class="col-md-3 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <img
+                                src="{{ asset('storage/' . $image->path) }}"
+                                class="card-img-top img-fluid"
+                                alt="Gallery image"
+                                style="height: 200px; object-fit: cover;"
+                            >
+            
+                            <div class="card-body text-center">
+                                <form method="POST" action="{{ route('profile.images.destroy', $image) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Elimina
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-muted">Nessuna immagine nella gallery.</p>
+                @endforelse
+            </div>
         </div>
-    </div>
+
 
     {{-- scripts --}}
     <script>
