@@ -32,4 +32,8 @@ class UserProfile extends Model
         return $this->belongsToMany(Genre::class, 'genre_profile', 'user_profile_id', 'genre_id')
             ->withTimestamps();
     }
+
+    public function syncGenres(array $genreIds): void {
+        $this->genres()->sync($genreIds);
+    }
 }
