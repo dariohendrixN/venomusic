@@ -188,6 +188,69 @@
                     </form>
                 @endforeach
             </div>
+            
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header">
+                    Brani audio
+                </div>
+            
+                <div class="card-body">
+                    @if (session('status') === 'track-uploaded')
+                        <div class="alert alert-success">
+                            Brano caricato correttamente.
+                        </div>
+                    @endif
+            
+                    @if (session('status') === 'track-deleted')
+                        <div class="alert alert-success">
+                            Brano eliminato correttamente.
+                        </div>
+                    @endif
+            
+                    <form method="POST" action="{{ route('profile.tracks.store') }}" enctype="multipart/form-data">
+                        @csrf
+            
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Titolo brano</label>
+                            <input type="text" class="form-control" id="title" name="title">
+                            @error('title')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+            
+                        <div class="mb-3">
+                            <label for="genre_id" class="form-label">Genere principale</label>
+                            <select name="genre_id" id="genre_id" class="form-control">
+                                <option value="">-- nessuno --</option>
+                                @foreach($profile->genres as $genre)
+                                    <option value="{{ $genre->id }}">{{ $genre->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('genre_id')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+            
+                        <div class="mb-3">
+                            <label for="audio_file" class="form-label">File audio</label>
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="audio_file"
+                                name="audio_file"
+                                accept=".mp3,.wav,.ogg,.m4a"
+                            >
+                            @error('audio_file')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+            
+                        <button type="submit" class="btn btn-primary">
+                            Carica brano
+                        </button>
+                    </form>
+                </div>
+            </div>
 
             <div class="card mt-4 shadow-sm">
                 <div class="card-header">
@@ -236,8 +299,7 @@
                                 src="{{ asset('storage/' . $image->path) }}"
                                 class="card-img-top img-fluid"
                                 alt="Gallery image"
-                                style="height: 200px; object-fit: cover;"
-                            >
+                                style="height: 200px; object-fit: cover;">
             
                             <div class="card-body text-center">
                                 <form method="POST" action="{{ route('profile.images.destroy', $image) }}">

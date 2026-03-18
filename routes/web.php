@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileGenreController;
 use App\Http\Controllers\ProfileImageController;
 use App\Http\Controllers\RoleRequestController;
+use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -72,6 +73,14 @@ Route::post('/profile/images', [ProfileImageController::class, 'store'])
 Route::delete('/profile/images/{image}', [ProfileImageController::class, 'destroy'])
     ->middleware('auth')
     ->name('profile.images.destroy');
+
+Route::post('/profile/tracks', [TrackController::class, 'store'])
+    ->middleware('auth')
+    ->name('profile.tracks.store');
+
+Route::delete('/profile/tracks/{track}', [TrackController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('profile.tracks.destroy');
 
 // Route::get('/discover/{genre}', [DiscoverController::class, 'search'])
 //     ->name('discover.search');

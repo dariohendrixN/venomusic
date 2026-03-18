@@ -17,10 +17,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $user = $request->user()->load('profile.images');
+        $user = $request->user()->load(
+            'profile.images',
+            'profile.genres',
+            'profile.tracks.genre',);
+        
         return view('profile.edit', [
             'user' => $request->user(),
-            'profile' => $request->user()->profile,
+            'profile' => $request->user()->profile
         ]);
     }
 
@@ -39,7 +43,7 @@ class ProfileController extends Controller
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
         ]);
 
         $user = $request->user();
@@ -57,7 +61,7 @@ class ProfileController extends Controller
             'city' => $validated['city'] ?? null,
             'province' => $validated['province'] ?? null,
             'region' => $validated['region'] ?? null,
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'] ?? null
         ];
 
         if ($request->hasFile('profile_image')) {
@@ -79,7 +83,7 @@ class ProfileController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+            'password' => ['required', 'current_password']
         ]);
 
         $user = $request->user();

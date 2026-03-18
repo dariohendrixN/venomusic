@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Genre;
 use App\Models\ProfileImage;
+use App\Models\Track;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,5 +41,9 @@ class UserProfile extends Model
 
     public function images() {
         return $this->hasMany(ProfileImage::class, 'user_profile_id');
+    }
+
+    public function tracks() {
+        return $this->hasMany(Track::class, 'user_profile_id');
     }
 }
