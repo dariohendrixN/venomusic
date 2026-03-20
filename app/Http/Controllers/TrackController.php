@@ -10,7 +10,11 @@ class TrackController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        if (! $request->user()->canUploadMedia()) {
+            abort(403, 'Non sei autorizzato a caricare brani.');
+        }
+
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'genre_id' => ['nullable', 'exists:genres,id'],
             'audio_file' => ['required', 'file', 'mimes:mp3,wav,ogg,m4a', 'max:10240'],
@@ -19,24 +23,28 @@ class TrackController extends Controller
         $profile = $request->user()->profile;
 
         $path = $request->file('audio_file')->store('tracks', 'public');
-
-        $profile->tracks()->create([
+        $track = $profile->tracks()->create([
             'title' => $request->title,
             'genre_id' => $request->genre_id ?: null,
-            'path' => $path,
+            'audio_path' => $path,
         ]);
 
-        return back()->with('status', 'track-updated');
+        return redirect()->route('profile.edit')->with('status', 'track-uploaded');
     }
 
     public function destroy(Request $request, Track $track) {
+        
+        if (! $request->user()->canUploadTracks()) {
+            abort(403, 'Non sei autorizzato a eliminare brani.');
+        }
+
         $profile = $request->user()->profile;
         if ($track->user_profile_id !== $profile->id) {
             abort(403);
         }
-        Storage::disk('public')->delete($track->path);
+        Storage::disk('public')->delete($track->audio_path);
         $track->delete();
         
-        return back()->with('status', 'track-deleted');
+        return redirect()->route('profile.edit')->with('status', 'track-deleted');
     }
 }

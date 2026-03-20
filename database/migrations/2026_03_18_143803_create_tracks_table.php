@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('genres')
                 ->nullableOnDelete();
             $table->string('title');
-            $table->string('uadio_path');
+            $table->string('audio_path');
             $table->timestamps();
         });
     }

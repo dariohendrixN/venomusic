@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Storage;
 class ProfileImageController extends Controller
 {
     public function store(Request $request) {
+       
+        if (! $request->user()->canUploadMedia()) {
+            abort(403, 'Non sei autorizzato a caricare immagini');
+        }
         
         $request->validate([
             'images' => ['required', 'array'],
-            'images.*' => ['file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'images.*' => ['file', 'mimes:jpg,jpeg,png,webp', 'max:10500'],
         ]);
         
         $profile = $request->user()->profile;
@@ -29,6 +33,11 @@ class ProfileImageController extends Controller
     }
 
     public function destroy(Request $request, ProfileImage $image) {
+        
+        if (! $request->user()->canUploadMedia()) {
+            abort(403, 'Non sei autorizzato a gestire la gallery di questo profilo');
+        }
+
         $profile = $request->user()->profile;
         if ($image->user_profile_id !== $profile->id) {
             abort(403);

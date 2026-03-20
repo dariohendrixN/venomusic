@@ -23,8 +23,8 @@ class ProfileController extends Controller
             'profile.tracks.genre',);
         
         return view('profile.edit', [
-            'user' => $request->user(),
-            'profile' => $request->user()->profile
+            'user' => $user,
+            'profile' => $user->profile
         ]);
     }
 
@@ -43,7 +43,7 @@ class ProfileController extends Controller
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048']
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10500']
         ]);
 
         $user = $request->user();
@@ -63,6 +63,10 @@ class ProfileController extends Controller
             'region' => $validated['region'] ?? null,
             'phone' => $validated['phone'] ?? null
         ];
+
+        if ($request->hasFile('profile_image') && ! $request->user()->canUploadMedia()) {
+            abort(403, 'Non sei autorizzato a caricare la foto profilo, richiedi un ruolo');
+        }
 
         if ($request->hasFile('profile_image')) {
             if ($profile->profile_image) {

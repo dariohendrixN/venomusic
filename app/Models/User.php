@@ -96,5 +96,25 @@ class User extends Authenticatable
 
     return trim($name . ' ' . $surname);
 }
+
+public function canUploadMedia(): bool {
+    return $this->hasRole([
+            'admin', 
+            'artist', 
+            'producer', 
+            'label', 
+            'studio', 
+            'label']);
+}
+
+public function canUploadTracks():bool {
+    return $this->hasRole([
+            'admin', 
+            'artist', 
+            'producer', '
+            label']);
+}
+
+
     
 }

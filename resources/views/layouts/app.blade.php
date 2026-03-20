@@ -15,13 +15,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="bg-gray-100 pb-8">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white shadow mb-5">
+                    <div class="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
@@ -33,4 +33,13 @@
             </main>
         </div>
     </body>
+    <footer class="text-center text-lg-start" style="background-color: #db6930;">
+        <div class="container d-flex justify-content-center mt-10 py-3">
+         
+        <!-- Copyright -->
+        <div class="text-center text-white p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+          © 2026 Venomusic
+        </div>
+        <!-- Copyright -->
+      </footer>
 </html>

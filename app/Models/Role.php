@@ -15,6 +15,8 @@ class Role extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_roles', 'role_id', 'user_id') ->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')->withTimestamps();
+        return $this->belongsToMany(User::class, 'user_roles', 'role_id', 'user_id') 
+            ->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')
+            ->withTimestamps();
     }
 }
