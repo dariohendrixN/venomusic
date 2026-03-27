@@ -12,6 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
@@ -33,11 +34,11 @@
             </main>
         </div>
     </body>
-    <footer class="text-center text-lg-start" style="background-color: #db6930;">
+    <footer class="text-center text-lg-start sticky-bottom" style="background-color: #db6930;">
         <div class="container d-flex justify-content-center mt-10 py-3">
          
         <!-- Copyright -->
-        <div class="text-center text-white p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+        <div class="text-center text-white p-3 rounded" style="background-color: rgba(0, 0, 0, 0.2);">
           © 2026 Venomusic
         </div>
         <!-- Copyright -->
