@@ -1,4 +1,4 @@
-<!doctype html>
+{{-- <!doctype html>
 <html lang="it">
 
 <head>
@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Richieste Ruolo</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+</head> --}}
 
+<x-app-layout>
 <body>
     <div class="container mt-5">
 
@@ -100,3 +101,4 @@
     </div>
 </body>
 </html>
+</x-app-layout>

@@ -13,9 +13,7 @@
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <h1>Benvenuto Admin!</h1>
-    <p>Questa è la dashboard riservata agli amministratori.</p>
-
+    <h1>Questa è la dashboard riservata agli amministratori.</h1>
     <p>Utente: {{ auth()->user()->email }}</p>
 </body>
 </html>

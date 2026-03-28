@@ -1,4 +1,4 @@
-<!doctype html>
+{{-- <!doctype html>
 <html lang="it">
 
 <head>
@@ -6,272 +6,186 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Discover</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+</head> --}}
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Scopri artisti e professionisti
+        </h2>
+    </x-slot>
 
-<body>
-    <form method="GET" action="{{ route('discover.search') }}" class="row g-3 mb-4">
-
-        <div class="card text-center">
-            <div class="card-header pt-4">
-                <h2>Scopri artisti e professionisti</h2>
-            </div>
-            <div class="card-body">
-                <div class="container  d-flex flex-column align-items-center justify-content-center min-vh-50">
-                   
-                    <ul class="list-group list-group-horizontal-xl">
-                        <li class="list-group-item col-6">
-                            <div>
-                                <label for="profile_search" class="form-label">Profilo</label>
-                                <input type="text" name="profile_search" id="profile_search" class="form-control"
-                                    placeholder="Nome, cognome o alias" value="{{ request('profile_search', '') }}">
-                            </div>
-                        </li>
-                        <li class="list-group-item col-6">
-                            <div>
-                                <label for="location_search" class="form-label">Località</label>
-                                <input type="text" name="location_search" id="location_search" class="form-control"
-                                    placeholder="Città, provincia o regione"
-                                    value="{{ request('location_search', '') }}">
-                            </div>
-                        </li>
-
-                    </ul>
-
-                    <ul class="list-group list-group-horizontal-xl">
-                        <li class="list-group-item col-6">
-                            <div>
-                                <label>Ruolo</label>
-                                <select name="role" class="form-control">
-                                    <option value="">-- tutti --</option>
-                                    <option value="artist" {{ request('role') === 'artist' ? 'selected' : '' }}>Artisti
-                                    </option>
-                                    <option value="producer" {{ request('role') === 'producer' ? 'selected' : '' }}>
-                                        Producers</option>
-                                    <option value="studio" {{ request('role') === 'studio' ? 'selected' : '' }}>Studi di
-                                        registrazione
-                                    </option>
-                                    <option value="venue" {{ request('role') === 'venue' ? 'selected' : '' }}>Spazi
-                                        live
-                                    </option>
-                                </select>
-                            </div>
-                        </li>
-                        <li class="list-group-item col-6">
-                            <div>
-                                <label for="genre-search" class="form-label">Genere</label>
-                                <input type="text" id="genre-search" class="form-control"
-                                    placeholder="Cerca genere..." value="{{ request('genre_name', '') }}">
-
-                                <input type="hidden" name="genre_id" id="genre-id"
-                                    value="{{ request('genre_id', '') }}">
-                                <input type="hidden" name="genre_name" id="genre-name"
-                                    value="{{ request('genre_name', '') }}">
-
-                                <div id="genre-suggestions" class="list-group mt-2"></div>
-                            </div>
-                        </li>
-                    </ul>
-
-                </div>
-                
-                <div class="container  d-flex flex-column align-items-center justify-content-center min-vh-50">
-                    <button class="btn btn-primary w-25 my-4">
-                        Cerca
-                    </button>
-                </div>
+    <body>
+        <form method="GET" action="{{ route('discover.search') }}" class="row g-3 mb-4">
 
 
+                <div class="card-body text-center">
+                    <div class="container  d-flex flex-column align-items-center justify-content-center min-vh-50">
+
+                        <ul class="list-group list-group-horizontal-xl">
+                            <li class="list-group-item col-md-auto">
+                                <div>
+                                    <label for="profile_search" class="form-label">Profilo</label>
+                                    <input type="text" name="profile_search" id="profile_search" class="form-control"
+                                        placeholder="Nome, cognome o alias" value="{{ request('profile_search', '') }}">
+                                </div>
+                            </li>
+                            <li class="list-group-item col-md-auto">
+                                <div>
+                                    <label for="location_search" class="form-label">Località</label>
+                                    <input type="text" name="location_search" id="location_search"
+                                        class="form-control" placeholder="Città, provincia o regione"
+                                        value="{{ request('location_search', '') }}">
+                                </div>
+                            </li>
+
+                        </ul>
+
+                        <ul class="list-group list-group-horizontal-xl">
+                            <li class="list-group-item col-md-auto">
+                                <div>
+                                    <label>Ruolo</label>
+                                    <select name="role" class="form-control">
+                                        <option value="">-- tutti --</option>
+                                        <option value="artist" {{ request('role') === 'artist' ? 'selected' : '' }}>
+                                            Artisti
+                                        </option>
+                                        <option value="producer" {{ request('role') === 'producer' ? 'selected' : '' }}>
+                                            Producers</option>
+                                        <option value="studio" {{ request('role') === 'studio' ? 'selected' : '' }}>
+                                            Studi di
+                                            registrazione
+                                        </option>
+                                        <option value="venue" {{ request('role') === 'venue' ? 'selected' : '' }}>Spazi
+                                            live
+                                        </option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li class="list-group-item col-md-auto">
+                                <div>
+                                    <label for="genre-search" class="form-label">Genere</label>
+                                    <input type="text" id="genre-search" class="form-control"
+                                        placeholder="Cerca genere..." value="{{ request('genre_name', '') }}">
+
+                                    <input type="hidden" name="genre_id" id="genre-id"
+                                        value="{{ request('genre_id', '') }}">
+                                    <input type="hidden" name="genre_name" id="genre-name"
+                                        value="{{ request('genre_name', '') }}">
+
+                                    <div id="genre-suggestions" class="list-group mt-2"></div>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="container  d-flex flex-column align-items-center justify-content-center min-vh-30">
+                        <button class="btn btn-primary my-4 px-4">
+                            Cerca
+                        </button>
+                    </div>
 
 
-                <div class="card-footer text-body-secondary">
-                    @isset($profiles)
-                        <h4 class="mb-3">Risultati</h4>
 
-                        @forelse($profiles as $profile)
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $profile->display_name }}</h5>
 
-                                    <p class="mb-2">
-                                        <strong>Nome:</strong>
-                                        {{ trim(($profile->name ?? '') . ' ' . ($profile->surname ?? '')) }}
-                                    </p>
+                    <div class="card-footer text-body-secondary">
+                        @isset($profiles)
+                            <h4 class="mb-3">Risultati</h4>
 
-                                    <p class="mb-2">
-                                        <strong>Località:</strong>
-                                        {{ $profile->city ?? '-' }}
-                                        @if ($profile->province)
-                                            , {{ $profile->province }}
-                                        @endif
-                                        @if ($profile->region)
-                                            , {{ $profile->region }}
-                                        @endif
-                                    </p>
+                            @forelse($profiles as $profile)
+                                <div class="card mb-3 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ $profile->display_name }}</h5>
 
-                                    <div class="mb-2">
-                                        <strong>Ruoli:</strong>
-                                        @foreach ($profile->user->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved'])->unique('id') as $role)
-                                            <span class="badge bg-success">
-                                                {{ $role->name }}
-                                            </span>
-                                        @endforeach
-                                    </div>
+                                        <p class="mb-2">
+                                            <strong>Nome:</strong>
+                                            {{ trim(($profile->name ?? '') . ' ' . ($profile->surname ?? '')) }}
+                                        </p>
 
-                                    <div>
-                                        <strong>Generi:</strong>
-                                        @foreach ($profile->genres as $genre)
-                                            <span class="badge bg-primary">
-                                                {{ $genre->name }}
-                                            </span>
-                                        @endforeach
+                                        <p class="mb-2">
+                                            <strong>Località:</strong>
+                                            {{ $profile->city ?? '-' }}
+                                            @if ($profile->province)
+                                                , {{ $profile->province }}
+                                            @endif
+                                            @if ($profile->region)
+                                                , {{ $profile->region }}
+                                            @endif
+                                        </p>
+
+                                        <div class="mb-2">
+                                            <strong>Ruoli:</strong>
+                                            @foreach ($profile->user->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved'])->unique('id') as $role)
+                                                <span class="badge bg-success">
+                                                    {{ $role->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+
+                                        <div>
+                                            <strong>Generi:</strong>
+                                            @foreach ($profile->genres as $genre)
+                                                <span class="badge bg-primary">
+                                                    {{ $genre->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @empty
-                            <p>Nessun profilo trovato.</p>
-                        @endforelse
-                    @endisset
-                </div>
-            </div>
-
-            {{-- <div class="col-md-4">
-                <label>Ruolo</label>
-                <select name="role" class="form-control">
-                    <option value="">-- tutti --</option>
-                    <option value="artist" {{ request('role') === 'artist' ? 'selected' : '' }}>Artisti</option>
-                    <option value="producer" {{ request('role') === 'producer' ? 'selected' : '' }}>Producers</option>
-                    <option value="studio" {{ request('role') === 'studio' ? 'selected' : '' }}>Studi di registrazione
-                    </option>
-                    <option value="venue" {{ request('role') === 'venue' ? 'selected' : '' }}>Spazi live</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <label for="genre-search" class="form-label">Genere</label>
-                <input type="text" id="genre-search" class="form-control" placeholder="Cerca genere..."
-                    value="{{ request('genre_name', '') }}">
-
-                <input type="hidden" name="genre_id" id="genre-id" value="{{ request('genre_id', '') }}">
-                <input type="hidden" name="genre_name" id="genre-name" value="{{ request('genre_name', '') }}">
-
-                <div id="genre-suggestions" class="list-group mt-2"></div>
-            </div>
-
-            <div class="col-md-6">
-                <label for="profile_search" class="form-label">Profilo</label>
-                <input type="text" name="profile_search" id="profile_search" class="form-control"
-                    placeholder="Nome, cognome o alias" value="{{ request('profile_search', '') }}">
-            </div>
-
-            <div class="col-md-6">
-                <label for="location_search" class="form-label">Località</label>
-                <input type="text" name="location_search" id="location_search" class="form-control"
-                    placeholder="Città, provincia o regione" value="{{ request('location_search', '') }}">
-            </div>
-
-            <div class="col-12">
-                <button class="btn btn-primary w-100">
-                    Cerca
-                </button>
-            </div>
-
-    </form>
-
-    @isset($profiles)
-        <h4 class="mb-3">Risultati</h4>
-
-        @forelse($profiles as $profile)
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $profile->display_name }}</h5>
-
-                    <p class="mb-2">
-                        <strong>Nome:</strong>
-                        {{ trim(($profile->name ?? '') . ' ' . ($profile->surname ?? '')) }}
-                    </p>
-
-                    <p class="mb-2">
-                        <strong>Località:</strong>
-                        {{ $profile->city ?? '-' }}
-                        @if ($profile->province)
-                            , {{ $profile->province }}
-                        @endif
-                        @if ($profile->region)
-                            , {{ $profile->region }}
-                        @endif
-                    </p>
-
-                    <div class="mb-2">
-                        <strong>Ruoli:</strong>
-                        @foreach ($profile->user->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved'])->unique('id') as $role)
-                            <span class="badge bg-success">
-                                {{ $role->name }}
-                            </span>
-                        @endforeach
-                    </div>
-
-                    <div>
-                        <strong>Generi:</strong>
-                        @foreach ($profile->genres as $genre)
-                            <span class="badge bg-primary">
-                                {{ $genre->name }}
-                            </span>
-                        @endforeach
+                            @empty
+                                <p>Nessun profilo trovato.</p>
+                            @endforelse
+                        @endisset
                     </div>
                 </div>
-            </div>
-        @empty
-            <p>Nessun profilo trovato.</p>
-        @endforelse
-    @endisset --}}
 
+                {{-- scripts --}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const input = document.getElementById('genre-search');
+                        const box = document.getElementById('genre-suggestions');
+                        const hiddenId = document.getElementById('genre-id');
+                        const hiddenName = document.getElementById('genre-name');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('genre-search');
-            const box = document.getElementById('genre-suggestions');
-            const hiddenId = document.getElementById('genre-id');
-            const hiddenName = document.getElementById('genre-name');
+                        if (!input || !box || !hiddenId || !hiddenName) return;
 
-            if (!input || !box || !hiddenId || !hiddenName) return;
+                        input.addEventListener('keyup', async () => {
+                            const q = input.value.trim();
 
-            input.addEventListener('keyup', async () => {
-                const q = input.value.trim();
+                            hiddenId.value = '';
+                            hiddenName.value = q;
 
-                hiddenId.value = '';
-                hiddenName.value = q;
+                            if (q.length < 2) {
+                                box.innerHTML = '';
+                                return;
+                            }
 
-                if (q.length < 2) {
-                    box.innerHTML = '';
-                    return;
-                }
+                            try {
+                                const res = await fetch(`/genres/search?q=${encodeURIComponent(q)}`);
+                                const data = await res.json();
 
-                try {
-                    const res = await fetch(`/genres/search?q=${encodeURIComponent(q)}`);
-                    const data = await res.json();
+                                box.innerHTML = '';
 
-                    box.innerHTML = '';
+                                data.forEach(g => {
+                                    const item = document.createElement('button');
+                                    item.type = 'button';
+                                    item.classList.add('list-group-item', 'list-group-item-action');
+                                    item.innerText = g.name;
 
-                    data.forEach(g => {
-                        const item = document.createElement('button');
-                        item.type = 'button';
-                        item.classList.add('list-group-item', 'list-group-item-action');
-                        item.innerText = g.name;
+                                    item.addEventListener('click', () => {
+                                        input.value = g.name;
+                                        hiddenId.value = g.id;
+                                        hiddenName.value = g.name;
+                                        box.innerHTML = '';
+                                    });
 
-                        item.addEventListener('click', () => {
-                            input.value = g.name;
-                            hiddenId.value = g.id;
-                            hiddenName.value = g.name;
-                            box.innerHTML = '';
+                                    box.appendChild(item);
+                                });
+                            } catch (error) {
+                                console.error('Discover genre search error:', error);
+                            }
                         });
-
-                        box.appendChild(item);
                     });
-                } catch (error) {
-                    console.error('Discover genre search error:', error);
-                }
-            });
-        });
-    </script>
-
-</body>
+                </script>
+    </body>
+</x-app-layout>
