@@ -34,16 +34,27 @@ class ProfileController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            // generalità
             'name' => ['nullable', 'string', 'max:255'],
             'surname' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string',  'lowercase', 'email', 'max:255'],
             'display_name' => ['required', 'string', 'max:255'],
+            // profilo
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10500']
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10500'], 
+            // links sound
+            'qobuz_url' => ['nullable', 'url'],
+            'bandcamp_url' => ['nullable', 'url'],
+            'deezer_url' => ['nullable', 'url'],
+            'soundcloud_url' => ['nullable', 'url'],
+            'amazon_music_url' => ['nullable', 'url'],
+            'youtube_music_url' => ['nullable', 'url'],
+            'apple_music_url' => ['nullable', 'url'],
+            'spotify_url' => ['nullable', 'url'],
         ]);
 
         $user = $request->user();
@@ -57,11 +68,22 @@ class ProfileController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'display_name' => $validated['display_name'],
+
             'address' => $validated['address'] ?? null,
             'city' => $validated['city'] ?? null,
             'province' => $validated['province'] ?? null,
             'region' => $validated['region'] ?? null,
-            'phone' => $validated['phone'] ?? null
+            'phone' => $validated['phone'] ?? null,
+
+            'qobuz_url' => $validated['qobuz_url'] ?? null,
+            'bandcamp_url' => $validated['bandcamp_url'] ?? null,
+            'deezer_url' => $validated['deezer_url'] ?? null,
+            'soundcloud_url' => $validated['soundcloud_url'] ?? null,
+            'amazon_music_url'  => $validated['amazon_music_url'] ?? null,
+            'youtube_music_url' => $validated['youtube_music_url'] ?? null,
+            'apple_music_url' => $validated['apple_music_url'] ?? null,
+            'spotify_url' => $validated['spotify_url'] ?? null,
+            
         ];
 
         if ($request->hasFile('profile_image') && ! $request->user()->canUploadMedia()) {
@@ -80,6 +102,33 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
+
+    public function updateLinks(Request $request): RedirectResponse
+{
+    $validated = $request->validate([
+        'qobuz_url' => ['nullable', 'url'],
+        'bandcamp_url' => ['nullable', 'url'],
+        'deezer_url' => ['nullable', 'url'],
+        'soundcloud_url' => ['nullable', 'url'],
+        'amazon_music_url' => ['nullable', 'url'],
+        'youtube_music_url' => ['nullable', 'url'],
+        'apple_music_url' => ['nullable', 'url'],
+        'spotify_url' => ['nullable', 'url'],
+    ]);
+
+    $request->user()->profile->update([
+        'qobuz_url' => $validated['qobuz_url'] ?? null,
+        'bandcamp_url' => $validated['bandcamp_url'] ?? null,
+        'deezer_url' => $validated['deezer_url'] ?? null,
+        'soundcloud_url' => $validated['soundcloud_url'] ?? null,
+        'amazon_music_url' => $validated['amazon_music_url'] ?? null,
+        'youtube_music_url' => $validated['youtube_music_url'] ?? null,
+        'apple_music_url' => $validated['apple_music_url'] ?? null,
+        'spotify_url' => $validated['spotify_url'] ?? null,
+    ]);
+
+    return Redirect::route('profile.edit')->with('status', 'profile-updated');
+}
 
     /**
      * Delete the user's account.

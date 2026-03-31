@@ -55,10 +55,9 @@ Route::get('/genres/search', [GenreController::class, 'search'])
 Route::post('/profile/genres', [ProfileGenreController::class, 'store'])
     ->middleware('auth')
     ->name('profile.genres.store');    
-
-Route::delete('/profile/genres/{genre}', [ProfileGenreController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('profile.genres.destroy');
+    Route::delete('/profile/genres/{genre}', [ProfileGenreController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('profile.genres.destroy');
 
 Route::get('/discover', [DiscoverController::class, 'index'])
     ->name('discover');
@@ -69,18 +68,25 @@ Route::get('/discover/search', [DiscoverController::class, 'search'])
 Route::post('/profile/images', [ProfileImageController::class, 'store'])
     ->middleware('auth')
     ->name('profile.images.store');
-
-Route::delete('/profile/images/{image}', [ProfileImageController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('profile.images.destroy');
+    Route::delete('/profile/images/{image}', [ProfileImageController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('profile.images.destroy');
 
 Route::post('/profile/tracks', [TrackController::class, 'store'])
     ->middleware('auth')
     ->name('profile.tracks.store');
+    Route::delete('/profile/tracks/{track}', [TrackController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('profile.tracks.destroy');
 
-Route::delete('/profile/tracks/{track}', [TrackController::class, 'destroy'])
+Route::patch('/profile/links', [ProfileController::class, 'updateLinks'])
     ->middleware('auth')
-    ->name('profile.tracks.destroy');
+    ->name('profile.links.update');
+    Route::delete('/profile/links/{link}', [ProfileController::class, 'destroyLink'])
+        ->middleware('auth')
+        ->name('profile.links.destroy');
+
+
 
 // Route::get('/discover/{genre}', [DiscoverController::class, 'search'])
 //     ->name('discover.search');

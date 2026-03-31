@@ -17,33 +17,46 @@ class UserProfile extends Model
         'name',
         'surname',
         'display_name',
-        'address', 
+        'address',
         'city',
         'province',
         'region',
         'country',
         'phone',
-        'profile_image'
+        'profile_image',
+        'qobuz_url',
+        'bandcamp_url',
+        'deezer_url',
+        'soundcloud_url',
+        'amazon_music_url',
+        'youtube_music_url',
+        'apple_music_url',
+        'spotify_url',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function genres(){
+    public function genres()
+    {
         return $this->belongsToMany(Genre::class, 'genre_profile', 'user_profile_id', 'genre_id')
             ->withTimestamps();
     }
 
-    public function syncGenres(array $genreIds): void {
+    public function syncGenres(array $genreIds): void
+    {
         $this->genres()->sync($genreIds);
     }
 
-    public function images() {
+    public function images()
+    {
         return $this->hasMany(ProfileImage::class, 'user_profile_id');
     }
 
-    public function tracks() {
+    public function tracks()
+    {
         return $this->hasMany(Track::class, 'user_profile_id');
     }
 }
