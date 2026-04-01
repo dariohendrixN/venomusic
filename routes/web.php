@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\RoleApprovalController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DiscoverController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\ProfileCollaborationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileGenreController;
 use App\Http\Controllers\ProfileImageController;
@@ -86,7 +87,16 @@ Route::patch('/profile/links', [ProfileController::class, 'updateLinks'])
         ->middleware('auth')
         ->name('profile.links.destroy');
 
+Route::post('/profile/collaborations', [ProfileCollaborationController::class, 'store'])
+    ->middleware('auth')
+    ->name('profile.collaborations.store');
+    Route::delete('/profile/collaborations/{collaboration}', [ProfileCollaborationController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('profile.collaborations.destroy');
 
+    Route::get('/profile/collaborators/search', [ProfileCollaborationController::class, 'searchProfiles'])
+        ->middleware('auth')
+        ->name('profile.collaborators.search');
 
 // Route::get('/discover/{genre}', [DiscoverController::class, 'search'])
 //     ->name('discover.search');

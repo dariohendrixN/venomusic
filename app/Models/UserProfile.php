@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Genre;
+use App\Models\ProfileCollaboration;
 use App\Models\ProfileImage;
 use App\Models\Track;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,5 +59,15 @@ class UserProfile extends Model
     public function tracks()
     {
         return $this->hasMany(Track::class, 'user_profile_id');
+    }
+
+    public function collaborations()
+    {
+        return $this->hasMany(ProfileCollaboration::class, 'profile_id');
+    }
+
+    public function collaborationsWith()
+    {
+        return $this->hasMany(ProfileCollaboration::class, 'collaborator_profile_id');
     }
 }

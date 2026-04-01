@@ -56,6 +56,13 @@
         </h3>
     </div>
 
+
+    @unless (auth()->user()->canUploadMedia())
+        <div class="alert alert-info mt-4">
+            Le funzionalità media gallery sono disponibili solo per profili professionali approvati.
+        </div>
+    @endunless
+
     @if ($profile->images->isNotEmpty())
         <div id="profileGalleryCarousel" class="carousel slide mt-4 mx-16" data-bs-ride="false">
             <div class="carousel-inner">
@@ -81,17 +88,11 @@
                 </button>
             @endif
         </div>
-
-        @unless (auth()->user()->canUploadMedia())
-            <div class="alert alert-info mt-4">
-                Le funzionalità media gallery sono disponibili solo per profili professionali approvati.
-            </div>
-        @endunless
     @else
         <p class="text-muted mt-4">Nessuna immagine nella gallery.</p>
     @endif
 
-    <div class="card mt-4 shadow-sm">
+    <div class="card mt-4 shadow-sm mx-8">
         <h5 class="card-header">Mi trovi su..</h5>
         <div class="card-body">
             @if (
@@ -145,6 +146,56 @@
                 @endif
             @endif
         </div>
+
+        <div class="card-footer mt-3">
+            <div class="card-title">
+                Collaborazioni attive / storiche
+            </div>
+        
+            <div class="card-body">
+                @forelse($profile->collaborations as $collaboration)
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ $collaboration->project_title ?: 'Collaborazione senza titolo' }}
+                            </h5>
+        
+                            <p class="mb-2">
+                                <strong>Tipo:</strong> {{ $collaboration->collaboration_type }}
+                            </p>
+        
+                            <p class="mb-2">
+                                <strong>Collaboratore:</strong>
+                                {{ $collaboration->collaborator->display_name ?? 'Profilo non disponibile' }}
+                            </p>
+        
+                            @if($collaboration->notes)
+                                <p class="mb-2">
+                                    <strong>Note:</strong> {{ $collaboration->notes }}
+                                </p>
+                            @endif
+        
+                            <p class="mb-2">
+                                <strong>Periodo:</strong>
+                                {{ $collaboration->started_at ?? 'N/D' }}
+                                -
+                                {{ $collaboration->ended_at ?? 'In corso' }}
+                            </p>
+        
+                            <form method="POST" action="{{ route('profile.collaborations.destroy', $collaboration) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Elimina collaborazione
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-muted mb-0">Nessuna collaborazione registrata.</p>
+                @endforelse
+            </div>
+        </div>
     </div>
 
     @unless (auth()->user()->canUploadTracks())
@@ -153,15 +204,15 @@
         </div>
     @endunless
 
-    <div class="card mt-4 shadow-sm">
+    <div class="card mt-4 shadow-sm mx-8">
         <div class="card-header">
             Brani
         </div>
 
         <div class="card-body">
             @forelse($profile->tracks as $track)
-                <div class="card my-4 mx-10">
-                    <div class="card-body">
+                <div class="card my-4 mx-10 border-none">
+                    <div class="card-body bg-dark text-white rounded">
                         <h5 class="card-title">{{ $track->title }}</h5>
 
                         <p class="mb-2">
@@ -190,7 +241,7 @@
     </div>
 
     <div class="card mt-4 shadow-sm">
-        
+
         <div class="card-header">
             Gestione del profilo
         </div>
@@ -391,7 +442,7 @@
                 <div class="col-12">
                     <div class="card mt-4 shadow-sm">
                         <div class="card-header">
-                            Condividi i profili delle tue piattaforme
+                            Condividi i links delle tue piattaforme
                         </div>
 
                         <div class="card-body">
@@ -665,9 +716,80 @@
             </div>
         </div>
     @endif
-    </div>
-    </div>
 
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header">
+            Collaborazioni
+        </div>
+    
+        <div class="card-body">
+            @if (session('status') === 'collaboration-added')
+                <div class="alert alert-success">
+                    Collaborazione aggiunta correttamente.
+                </div>
+            @endif
+    
+            @if (session('status') === 'collaboration-deleted')
+                <div class="alert alert-success">
+                    Collaborazione eliminata correttamente.
+                </div>
+            @endif
+    
+            <form method="POST" action="{{ route('profile.collaborations.store') }}">
+                @csrf
+    
+                <div class="mb-3">
+                    <label for="collaborator-search" class="form-label">Cerca collaboratore</label>
+                    
+                    <input type="text" class="form-control" id="collaborator-search" placeholder="Alias, nome, cognome o località" autocomplete="off">
+                
+                    <input type="hidden" id="collaborator_profile_id" name="collaborator_profile_id">
+                
+                    <div id="collaborator-suggestions" class="list-group mt-2"></div>
+                
+                    @error('collaborator_profile_id')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+    
+                <div class="mb-3">
+                    <label for="collaboration_type" class="form-label">Tipo collaborazione</label>
+                    <select name="collaboration_type" id="collaboration_type" class="form-control">
+                        <option value="featuring">Featuring</option>
+                        <option value="production">Produzione</option>
+                        <option value="co-production">Co-produzione</option>
+                        <option value="label-support">Supporto etichetta</option>
+                        <option value="songwriting">Songwriting</option>
+                        <option value="remix">Remix</option>
+                    </select>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="project_title" class="form-label">Titolo progetto</label>
+                    <input type="text" class="form-control" id="project_title" name="project_title">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Note</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="started_at" class="form-label">Inizio collaborazione</label>
+                    <input type="date" class="form-control" id="started_at" name="started_at">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="ended_at" class="form-label">Fine collaborazione</label>
+                    <input type="date" class="form-control" id="ended_at" name="ended_at">
+                </div>
+    
+                <button type="submit" class="btn btn-primary">
+                    Aggiungi collaborazione
+                </button>
+            </form>
+        </div>
+    </div>
 
     {{-- scripts --}}
     <script>
@@ -712,6 +834,7 @@
             });
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const carouselEl = document.getElementById('profileGalleryCarousel');
@@ -726,6 +849,66 @@
             }
         });
     </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const collaboratorInput = document.getElementById('collaborator-search');
+        const collaboratorHidden = document.getElementById('collaborator_profile_id');
+        const collaboratorBox = document.getElementById('collaborator-suggestions');
+
+        if (!collaboratorInput || !collaboratorHidden || !collaboratorBox) return;
+
+        async function loadCollaborators(query = '') {
+            try {
+                const res = await fetch(`/profile/collaborators/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                collaboratorBox.innerHTML = '';
+
+                data.forEach(profile => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.classList.add('list-group-item', 'list-group-item-action');
+
+                    const location = [profile.city, profile.province, profile.region]
+                        .filter(Boolean)
+                        .join(', ');
+
+                    item.innerHTML = `
+                        <div><strong>${profile.display_name ?? 'Profilo'}</strong></div>
+                        <div class="small text-muted">
+                            ${profile.full_name || 'Nome non disponibile'}
+                            ${location ? ' · ' + location : ''}
+                        </div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        collaboratorInput.value = profile.display_name ?? profile.full_name ?? 'Profilo selezionato';
+                        collaboratorHidden.value = profile.id;
+                        collaboratorBox.innerHTML = '';
+                    });
+
+                    collaboratorBox.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Collaborator search error:', error);
+            }
+        }
+
+        loadCollaborators('');
+
+        collaboratorInput.addEventListener('focus', () => {
+            if (collaboratorInput.value.trim() === '') {
+                loadCollaborators('');
+            }
+        });
+
+        collaboratorInput.addEventListener('keyup', () => {
+            collaboratorHidden.value = '';
+            loadCollaborators(collaboratorInput.value.trim());
+        });
+    });
+</script>
 
     {{-- form breeze --}}
     {{-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">

@@ -20,7 +20,9 @@ class ProfileController extends Controller
         $user = $request->user()->load(
             'profile.images',
             'profile.genres',
-            'profile.tracks.genre',);
+            'profile.tracks.genre',
+            'profile.collaborations.collaborator.user');
+
         
         return view('profile.edit', [
             'user' => $user,
