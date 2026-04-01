@@ -8,23 +8,29 @@ use Illuminate\Http\Request;
 
 class RoleApprovalController extends Controller
 {
-    public function index() {
-        
-        $users = User::whereHas('roles', function ($query) {
-            $query->where('user_roles.status', 'pending');
-        })
-        ->with(['roles', 'profile'])
+    public function index()
+{
+    $pendingUsers = User::whereHas('roles', function ($query) {
+        $query->where('user_roles.status', 'pending');
+    })
+        ->with(['profile','roles'])
         ->get();
-        
-        return view('admin.role-requests', compact('users'));
-    }
+
+    $registeredUsers = User::with([
+        'profile',
+        'roles',
+        'profile.collaborations.collaborator',
+    ])->get();
+
+    return view('admin.role-requests', compact('pendingUsers', 'registeredUsers'));
+}
 
     public function approve(User $user, string $role) {
 
         $roleModel = $user->roles()
-        ->where('roles.name', $role)
-        ->wherePivot('status', 'pending')
-        ->first();
+            ->where('roles.name', $role)
+            ->wherePivot('status', 'pending')
+            ->first();
 
         if (!$roleModel) {
             return back()->with('error', 'Richiesta non trovata');
