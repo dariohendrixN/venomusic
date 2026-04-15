@@ -21,6 +21,7 @@ class DiscoverController extends Controller
         $role = $request->get('role');
         $profileSearch = trim((string)$request->get('profile_search'));
         $locationSearch = trim((string)$request->get('location_search'));
+        $discoverableRoles = ['artist', 'producer', 'label', 'studio', 'venue'];
         $profiles= UserProfile::query()
             ->with(['user.roles', 'genres'])
             ->when($genreId, function ($q) use ($genreId) {
@@ -47,6 +48,10 @@ class DiscoverController extends Controller
                         ->orWhere('province', 'like', "%{$locationSearch}%")
                         ->orWhere('region', 'like', "%{$locationSearch}%");
                 });
+            })
+            ->whereHas('user.roles', function ($q) use ($discoverableRoles) {
+                $q->whereIn('roles.name', $discoverableRoles)
+                    ->whereIn('user_roles.status', ['auto_approved', 'manually_approved']);
             })
             ->get();
         return view('discover.index', [

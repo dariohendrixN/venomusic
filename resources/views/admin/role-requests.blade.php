@@ -102,7 +102,7 @@
 
         <div class="container card my-5 border-none">
             <h1 class="my-3 card-title">Utenti registrati</h1>
-            <div class="card-body table-responsive">
+            <div class="card-body table-responsive ps-0">
 
                 <table class="table table-striped table-bordered shadow-sm align-middle">
                     <thead class="table-dark">

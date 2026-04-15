@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileCollaborationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileGenreController;
 use App\Http\Controllers\ProfileImageController;
+use App\Http\Controllers\ProfileRequestController;
+use App\Http\Controllers\PublicProfileController;
 use App\Http\Controllers\RoleRequestController;
 use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +51,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 Route::post('/roles/request', [RoleRequestController::class, 'requestRole'])
     ->middleware(['auth'])
     ->name('roles.request');
+
+Route::get('/profiles/{profile}', [PublicProfileController::class, 'show'])
+    ->name('profiles.show');
 
 Route::get('/genres/search', [GenreController::class, 'search'])
     ->name('genres.search');
@@ -97,6 +102,19 @@ Route::post('/profile/collaborations', [ProfileCollaborationController::class, '
     Route::get('/profile/collaborators/search', [ProfileCollaborationController::class, 'searchProfiles'])
         ->middleware('auth')
         ->name('profile.collaborators.search');
+
+    
+    Route::patch('/profile/requests/{request}/accept', [ProfileRequestController::class, 'accept'])
+        ->middleware('auth')
+        ->name('profile.requests.accept');
+    
+    Route::patch('/profile/requests/{request}/reject', [ProfileRequestController::class, 'reject'])
+        ->middleware('auth')
+        ->name('profile.requests.reject');
+
+    Route::post('/profile/requests', [ProfileRequestController::class, 'store'])
+        ->middleware('auth')
+        ->name('profile.requests.store');
 
 // Route::get('/discover/{genre}', [DiscoverController::class, 'search'])
 //     ->name('discover.search');

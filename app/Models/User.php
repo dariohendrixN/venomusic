@@ -39,31 +39,41 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array{
+    protected function casts(): array
+    {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
     // get the roles that belong to the user model
-    public function roles() {
+    public function roles()
+    {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')->withTimestamps();
     }
 
-    public function hasRole(string|array $roles): bool{
+    public function hasRole(string|array $roles): bool
+    {
         return $this->roles()
             ->whereIn('name', (array) $roles)
             ->wherePivot('status', ['auto_approved', 'manually_approved'])
             ->exists();
     }
 
-    public function hasPendingRoleRequest(string|array $roles): bool{
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function hasPendingRoleRequest(string|array $roles): bool
+    {
         return $this->roles()
             ->whereIn('name', (array) $roles)
             ->wherePivot('status', 'pending')
             ->exists();
     }
-    public function assignRole(string $roleName, array $pivotData = []): void{
+    public function assignRole(string $roleName, array $pivotData = []): void
+    {
 
         $roleId = \App\Models\Role::where('name', $roleName)->value('id');
 
@@ -71,50 +81,96 @@ class User extends Authenticatable
             ->syncWithoutDetaching([$roleId => $pivotData]);
     }
 
-    public function activeRoles(){
+    public function activeRoles()
+    {
         return $this->roles()
-            ->wherePivotIn('status', ['auto_approved', 'manually_approved']);
+            ->wherePivotIn('status', ['auto_approved', 'manually_approved'])
+            ->pluck('name')
+            ->unique()
+            ->values();
     }
-
-    public function pendingRoles(){
+    public function pendingRoles()
+    {
         return $this->roles()
             ->wherePivot('status', 'pending');
     }
 
-    public function isAdmin(): bool{
-        return $this->hasRole('admin');
+    public function hasActiveRole(string|array $roles): bool
+    {
+        $roles = (array) $roles;
+        return $this->activeRoles()->intersect($roles)->isNotEmpty();
     }
 
-    public function profile(){
+    public function isObserverOnly(): bool
+    {
+        return $this->activeRoles()->isEmpty() || $this->activeRoles()->every(fn($role) => $role === 'observer');
+    }
+
+    public function profile()
+    {
         return $this->hasOne(UserProfile::class);
     }
 
-    public function fullName(): string{
+    public function fullName(): string
+    {
 
-    $name = $this->profile?->name ?? '';
-    $surname = $this->profile?->surname ?? '';
+        $name = $this->profile?->name ?? '';
+        $surname = $this->profile?->surname ?? '';
 
-    return trim($name . ' ' . $surname);
-}
+        return trim($name . ' ' . $surname);
+    }
 
-public function canUploadMedia(): bool {
-    return $this->hasRole([
-            'admin', 
-            'artist', 
-            'producer', 
-            'label', 
-            'studio', 
-            'label']);
-}
+    public function canUploadMedia(): bool
+    {
+        return $this->hasActiveRole([
+            'admin',
+            'artist',
+            'producer',
+            'label',
+            'studio',
+            'venue',
+        ]);
+    }
 
-public function canUploadTracks():bool {
-    return $this->hasRole([
-            'admin', 
-            'artist', 
-            'producer', '
-            label']);
-}
+    public function canUploadTracks(): bool
+    {
+        return $this->hasActiveRole([
+            'admin',
+            'artist',
+            'producer',
+            'label',
+        ]);
+    }
 
+    public function canManageCollaborations(): bool
+    {
+        return $this->hasActiveRole([
+            'admin',
+            'artist',
+            'producer',
+            'label',
+        ]);
+    }
 
-    
+    public function canSendRequests(): bool
+    {
+        return $this->hasActiveRole([
+            'admin',
+            'artist',
+            'producer',
+            'label',
+            'venue',
+        ]);
+    }
+
+    public function canManageRequests(): bool
+    {
+        return $this->hasActiveRole([
+            'admin',
+            'artist',
+            'producer',
+            'studio',
+            'venue',
+        ]);
+    }
 }

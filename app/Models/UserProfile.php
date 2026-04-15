@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Genre;
+use App\Models\ProfileRequest;
 use App\Models\ProfileCollaboration;
-use App\Models\ProfileImage;
 use App\Models\Track;
+use App\Models\Genre;
+use App\Models\ProfileImage;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -70,4 +72,14 @@ class UserProfile extends Model
     {
         return $this->hasMany(ProfileCollaboration::class, 'collaborator_profile_id');
     }
+    public function sentRequests()
+    {
+        return $this->hasMany(ProfileRequest::class, 'sender_profile_id');
+    }
+
+    public function receivedRequests()
+    {
+        return $this->hasMany(ProfileRequest::class, 'receiver_profile_id');
+    }
+
 }

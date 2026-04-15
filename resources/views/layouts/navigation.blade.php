@@ -27,7 +27,7 @@
                     @auth
                         @if (auth()->user()->isAdmin())
                             <x-nav-link :href="route('admin.role-requests')" :active="request()->routeIs('admin.role-requests')">
-                                Pannello richieste
+                                Pannello di controllo
                             </x-nav-link>
                         @endif
                     @endauth

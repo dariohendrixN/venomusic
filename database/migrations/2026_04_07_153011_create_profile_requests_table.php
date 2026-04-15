@@ -11,22 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profile_collaborations', function (Blueprint $table) {
+        Schema::create('profile_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')
+            $table->foreignId('sender_profile_id')
                 ->constrained('user_profiles')
+                ->cascadeOnDelete();            
+            $table->foreignId('receiver_profile_id')
+                ->constrained('user_profiles')                
                 ->cascadeOnDelete();
-            $table->foreignId('collaborator_profile_id')
-                ->constrained('user_profiles')
-                ->cascadeOnDelete();
-            $table->string('collaboration_type');
-            $table->string('project_title')
+            $table->string('request_type');
+            $table->string('status')
+                ->default('pending');
+            $table->string('subject')
                 ->nullable();
-            $table->text('notes')
+            $table->text('message')
                 ->nullable();
-            $table->text('started_at')
+            $table->timestamp('requested_date')
                 ->nullable();
-            $table->text('ended_at')
+            $table->timestamp('answered_at')
                 ->nullable();
             $table->timestamps();
         });
@@ -37,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profile_collaborations');
+        Schema::dropIfExists('profile_requests');
     }
 };

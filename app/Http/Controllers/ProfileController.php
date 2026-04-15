@@ -22,11 +22,18 @@ class ProfileController extends Controller
             'profile.genres',
             'profile.tracks.genre',
             'profile.collaborations.collaborator.user');
-
-        
+            
         return view('profile.edit', [
             'user' => $user,
-            'profile' => $user->profile
+            'profile' => $user->profile,
+            'receivedRequests' => $user->profile->receivedRequests()
+                ->with('sender')
+                ->latest()
+                ->get(),
+            'sentRequests' => $user->profile->sentRequests()
+                ->with('receiver')
+                ->latest()
+                ->get(),
         ]);
     }
 

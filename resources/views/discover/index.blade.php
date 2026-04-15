@@ -95,7 +95,11 @@
                             @forelse($profiles as $profile)
                                 <div class="card mb-3 shadow-sm">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ $profile->display_name }}</h5>
+                                        <h5 class="card-title">
+                                            <a href="{{ route('profiles.show', $profile) }}" class="btn btn-outline-secondary btn-sm mt-2">
+                                                {{ $profile->display_name }}
+                                            </a>
+                                        </h5>
 
                                         <p class="mb-2">
                                             <strong>Nome:</strong>
@@ -114,7 +118,7 @@
                                         </p>
 
                                         <div class="mb-2">
-                                            <strong>Ruoli:</strong>
+                                            <strong>Professioni:</strong>
                                             @foreach ($profile->user->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved'])->unique('id') as $role)
                                                 <span class="badge bg-success">
                                                     {{ $role->name }}
