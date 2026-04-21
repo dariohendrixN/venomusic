@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="container mt-5">
+    <div class="container mt-5 mx-auto">
 
         <div class="card shadow-sm text-center">
             <div class="card-header">
@@ -39,7 +39,7 @@
                 <form method="POST" action="{{ route('roles.request') }}">
                     @csrf
 
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex justify-content-center">
                         <label for="role" class="form-label"></label>
 
                         <select name="role" id="role" class="form-select w-50">
