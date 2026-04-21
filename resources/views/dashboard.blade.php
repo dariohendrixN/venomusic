@@ -17,7 +17,7 @@
 
     <div class="container mt-5">
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm text-center">
             <div class="card-header">
                 Richiedi un ruolo
             </div>
@@ -40,26 +40,23 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="role" class="form-label">Seleziona il ruolo</label>
+                        <label for="role" class="form-label"></label>
 
-                        <select name="role" id="role" class="form-select">
-                            <option value="">-- scegli ruolo --</option>
-                            <option value="artist">Artist</option>
+                        <select name="role" id="role" class="form-select w-50">
+                            <option value="">Lista ruoli</option>
+                            <option value="artist">Artista</option>
                             <option value="producer">Producer</option>
-                            <option value="studio">Studio</option>
-                            <option value="venue">Venue</option>
-                            <option value="label">Label</option>
+                            <option value="studio">Studio di Regist.</option>
+                            <option value="venue">Locale</option>
+                            <option value="label">Etichetta Disc.</option>
                         </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary">
                         Invia richiesta
                     </button>
-
                 </form>
-
             </div>
         </div>
-
     </div>
 </x-app-layout>

@@ -47,16 +47,19 @@
                                     <select name="role" class="form-control">
                                         <option value="">-- tutti --</option>
                                         <option value="artist" {{ request('role') === 'artist' ? 'selected' : '' }}>
-                                            Artisti
+                                            Artista
                                         </option>
                                         <option value="producer" {{ request('role') === 'producer' ? 'selected' : '' }}>
-                                            Producers</option>
+                                            Producer</option>
                                         <option value="studio" {{ request('role') === 'studio' ? 'selected' : '' }}>
-                                            Studi di
-                                            registrazione
+                                            Studo di
+                                            Regist.
                                         </option>
-                                        <option value="venue" {{ request('role') === 'venue' ? 'selected' : '' }}>Spazi
-                                            live
+                                        <option value="venue" {{ request('role') === 'venue' ? 'selected' : '' }}>
+                                            Locale
+                                        </option>
+                                        <option value="label" {{ request('role') === 'label' ? 'selected' : '' }}>
+                                            Etichetta Disc.
                                         </option>
                                     </select>
                                 </div>
@@ -119,9 +122,9 @@
 
                                         <div class="mb-2">
                                             <strong>Professioni:</strong>
-                                            @foreach ($profile->user->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved'])->unique('id') as $role)
+                                            @foreach ($profile->user->visibleActiveRoleNames() as $role)
                                                 <span class="badge bg-success">
-                                                    {{ $role->name }}
+                                                    {{__('roles.' . $role->name) }}
                                                 </span>
                                             @endforeach
                                         </div>

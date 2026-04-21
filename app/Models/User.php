@@ -106,6 +106,14 @@ class User extends Authenticatable
         return $this->activeRoles()->isEmpty() || $this->activeRoles()->every(fn($role) => $role === 'observer');
     }
 
+    public function visibleActiveRoleNames() {
+        $roles = $this->roles->whereIn('pivot.status', ['auto_approved', 'manually_approved']);
+        
+        $professionalRoles = $roles->reject(fn($role) => $role->name === 'observer');
+
+        return $professionalRoles->isNotEmpty() ? $professionalRoles : $roles;
+    }
+
     public function profile()
     {
         return $this->hasOne(UserProfile::class);

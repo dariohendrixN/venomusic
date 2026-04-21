@@ -38,11 +38,15 @@
                                     ->unique('id');
                             @endphp
 
-                            @forelse($activeRoles as $role)
+                            {{-- @forelse($activeRoles as $role)
                                 <span class="badge bg-success me-1">{{ $role->name }}</span>
                             @empty
                                 <span class="badge bg-secondary">observer</span>
-                            @endforelse
+                            @endforelse --}}
+
+                            @foreach($profile->user->visibleActiveRoleNames() as $role)
+                                <span class="badge bg-primary me-1">{{ $role->name }}</span>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -156,7 +160,7 @@
             </div>
         </div>
 
-        {{-- form richiesta solo da loggati e non verso se stessi --}}
+        {{-- form richiesta --}}
         @auth
             @if(auth()->user()->profile && auth()->user()->profile->id !== $profile->id)
                 <div class="card shadow-sm mb-4">
@@ -168,9 +172,26 @@
                                 Richiesta inviata correttamente.
                             </div>
                         @endif
+                        @if ($errors->any())
+                            <div class ="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         <form method="POST" action="{{ route('profile.requests.store') }}">
                             @csrf
+
+                            @error('request_type')
+                                <div class="alert alert-danger small">{{ $message }}</div>
+                            @enderror
+
+                            @error('receiver_profile_id')
+                                <div class="alert alert-danger small">{{ $message }}</div>
+                            @enderror
 
                             <input type="hidden" name="receiver_profile_id" value="{{ $profile->id }}">
 
@@ -184,10 +205,18 @@
                                 </select>
                             </div>
 
+                            @error('subject')
+                                <div class="alert alert-danger small">{{ $message }}</div>">
+                            @enderror
+
                             <div class="mb-3">
                                 <label for="subject" class="form-label">Oggetto</label>
                                 <input type="text" name="subject" id="subject" class="form-control">
                             </div>
+
+                            @error('message')
+                                <div class="alert alert-danger small">{{ $message }}</div>">
+                            @enderror
 
                             <div class="mb-3">
                                 <label for="message" class="form-label">Messaggio</label>

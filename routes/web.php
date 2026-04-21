@@ -104,11 +104,11 @@ Route::post('/profile/collaborations', [ProfileCollaborationController::class, '
         ->name('profile.collaborators.search');
 
     
-    Route::patch('/profile/requests/{request}/accept', [ProfileRequestController::class, 'accept'])
+    Route::patch('/profile/requests/{profileRequest}/accept', [ProfileRequestController::class, 'accept'])
         ->middleware('auth')
         ->name('profile.requests.accept');
     
-    Route::patch('/profile/requests/{request}/reject', [ProfileRequestController::class, 'reject'])
+    Route::patch('/profile/requests/{profileRequest}/reject', [ProfileRequestController::class, 'reject'])
         ->middleware('auth')
         ->name('profile.requests.reject');
 

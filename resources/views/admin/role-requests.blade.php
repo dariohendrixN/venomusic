@@ -1,13 +1,3 @@
-{{-- <!doctype html>
-<html lang="it">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Richieste Ruolo</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head> --}}
-
 <x-app-layout>
 
     <body>
@@ -51,16 +41,24 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
 
+
                                     @foreach ($user->roles->whereIn('pivot.status', ['manually_approved', 'auto_approved'])->unique('id') as $activeRole)
                                         <span class="badge bg-success">
-                                            {{ $activeRole->name }}
+                                            {{__('roles.' . $activeRole->name) }}
                                         </span>
                                     @endforeach
 
+                                    {{-- @forelse($user->visibleActiveRoleNames() as $role)
+                                        <span class="badge bg-primary me-1">
+                                            {{ $role->name }}
+                                        </span>
+                                    @empty
+                                        <span class="badge bg-secondary">observer</span>
+                                    @endforelse --}}
                                 </td>
                                 <td>
                                     <span class="badge bg-primary">
-                                        {{ $role->name }}
+                                        {{__('roles.' . $role->name) }}
                                     </span>
                                 </td>
                                 <td>
@@ -89,79 +87,88 @@
                             </tr>
                         @endforeach
 
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center">
-                                Nessuna richiesta pendente
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="container card my-5 border-none">
-            <h1 class="my-3 card-title">Utenti registrati</h1>
-            <div class="card-body table-responsive ps-0">
-
-                <table class="table table-striped table-bordered shadow-sm align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Full name</th>
-                            <th>Display name</th>
-                            <th>Email</th>
-                            <th>Ruoli attivi</th>
-                            <th>Collaborazioni</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @forelse($registeredUsers as $user)
-                            <tr>
-                                <td>
-                                    {{ trim(($user->profile->name ?? '') . ' ' . ($user->profile->surname ?? '')) ?: '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $user->profile->display_name ?? '-' }}
-                                </td>
-
-                                <td>
-                                    {{ $user->email }}
-                                </td>
-
-                                <td>
-                                    @php
-                                        $activeRoles = $user->roles
-                                            ->whereIn('pivot.status', ['auto_approved', 'manually_approved'])
-                                            ->unique('id');
-                                    @endphp
-
-                                    @forelse($activeRoles as $role)
-                                        <span class="badge bg-success me-1">
-                                            {{ $role->name }}
-                                        </span>
-                                    @empty
-                                        <span class="badge bg-secondary">
-                                            observer
-                                        </span>
-                                    @endforelse
-                                </td>
-
-                                <td>
-                                    {{ $user->profile?->collaborations?->count() ?? 0 }}
-                                </td>
-                            </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">
-                                    Nessun utente registrato
+                                <td colspan="6" class="text-center">
+                                    Nessuna richiesta pendente
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
-    </body>
-</x-app-layout>
+
+            <div class="container card my-5 border-none">
+                <h1 class="my-3 card-title">Utenti registrati</h1>
+                <div class="card-body table-responsive ps-0">
+
+                    <table class="table table-striped table-bordered shadow-sm align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Full name</th>
+                                <th>Display name</th>
+                                <th>Email</th>
+                                <th>Ruoli attivi</th>
+                                <th>Collaborazioni</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($registeredUsers as $user)
+                                <tr>
+                                    <td>
+                                        {{ trim(($user->profile->name ?? '') . ' ' . ($user->profile->surname ?? '')) ?: '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $user->profile->display_name ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $user->email }}
+                                    </td>
+
+                                    <td>
+                                        @php
+                                            $activeRoles = $user->roles
+                                                ->whereIn('pivot.status', ['auto_approved', 'manually_approved'])
+                                                ->unique('id');
+                                        @endphp
+
+                                        @forelse($user->visibleActiveRoleNames() as $role)
+                                            <span class="badge bg-primary me-1">
+                                                {{__('roles.' . $role->name) }}
+                                            </span>
+                                        @empty
+                                            <span class="badge bg-secondary">observer</span>
+                                        @endforelse
+
+                                        {{-- @forelse($activeRoles as $role)
+                                            <span class="badge bg-success me-1">
+                                                {{ $role->name }}
+                                            </span>
+                                        @empty
+                                            <span class="badge bg-secondary">
+                                                observer
+                                            </span>
+                                        @endforelse --}}
+
+                                    </td>
+
+                                    <td>
+                                        {{ $user->profile?->collaborations?->count() ?? 0 }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        Nessun utente registrato
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </body>
+    </x-app-layout>

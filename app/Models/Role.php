@@ -19,4 +19,18 @@ class Role extends Model
             ->withPivot('status', 'approved_at', 'approved_by', 'rejection_reason')
             ->withTimestamps();
     }
+
+    public function displayName(): string
+    {
+        return match ($this->name){
+            'admin' => 'Admin',
+            'observer' => 'Ospite',
+            'artist' => 'Artista',
+            'producer' => 'Producer',
+            'label' => 'Etichetta Disc.',
+            'venue' => 'Locale',
+            'studio' => 'Studio di Registrazione',
+            default => ucfirst($this->name),
+        };
+    }
 }

@@ -47,6 +47,13 @@
         </div>
     @endif
 
+    <div class="col-12 d-flex flex-column align-items-center p-0 mb-4">
+        <h2 class="mb-3 display-4 fst-italic text-secondary">
+            Ciao <span class="fw-bold text-primary-emphasis">{{ Auth::user()->profile->display_name }}</span>!
+        </h2>
+        <a class="text-primary-emphasis" href="{{ route('profiles.show', $profile) }}">Vista profilo pubblico</a>
+    </div>
+
     <div class="col-md-4 d-flex borde-none">
         @if ($profile->profile_image)
             <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
@@ -57,9 +64,7 @@
             </div>
         @endif
 
-        <h3 class="card-header my-4 ms-7">
-            <label class="form-label">{{ Auth::user()->profile->display_name }}</label><br>
-        </h3>
+       
     </div>
 
     @unless (auth()->user()->canUploadMedia())
@@ -827,12 +832,36 @@
 
             <div class="card-body">
                 @forelse($receivedRequests as $receivedRequest)
+                    @php
+                        $statusClass = match ($receivedRequest->status) {
+                            'accepted' => 'bg-success',
+                            'rejected' => 'bg-danger',
+                            'pending' => 'bg-warning text-dark',
+                            default => 'bg-secondary',
+                        };
+
+                        $requestTypeLabel = match ($receivedRequest->request_type) {
+                            'collaboration' => 'Collaborazione',
+                            'booking' => 'Prenotazione',
+                            'roster-proposal' => 'Proposta roster',
+                            'live-opportunity' => 'Candidatura live',
+                            default => $receivedRequest->request_type,
+                        };
+                    @endphp
+
                     <div class="border rounded p-3 mb-3">
                         <strong>{{ $receivedRequest->sender->display_name ?? 'Profilo' }}</strong>
 
                         <div class="small text-muted">
-                            Tipo: {{ $receivedRequest->request_type }}
+                            Tipo: {{ $requestTypeLabel }}
                         </div>
+
+                        @if ($receivedRequest->requested_date)
+                            <div class="small text-muted">
+                                Data Proposta:
+                                {{ \Carbon\Carbon::parse($receivedRequest->requested_date)->format('d/m/Y H:i') }}
+                            </div>
+                        @endif
 
                         @if ($receivedRequest->subject)
                             <div><strong>{{ $receivedRequest->subject }}</strong></div>
@@ -843,7 +872,7 @@
                         @endif
 
                         <div class="mt-2">
-                            <span class="badge bg-warning">{{ $receivedRequest->status }}</span>
+                            <span class="badge {{ $statusClass }}">{{ $receivedRequest->status }}</span>
                         </div>
 
                         @if ($receivedRequest->status === 'pending')
@@ -900,6 +929,7 @@
                         @endif
 
                         <div class="mt-2">
+
                             <span class="badge bg-secondary">{{ $sentRequest->status }}</span>
                         </div>
                     </div>

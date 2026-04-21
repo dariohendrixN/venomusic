@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProfileRequest;
+use App\Models\UserProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -18,13 +19,28 @@ class ProfileRequestController extends Controller
         ]);
 
         $senderProfile = $request->user()->profile;
-
+        
         if (! $senderProfile) {
             abort(403, 'Profilo non disponibile');
         }
+
+        if (! $request->user()->canSendRequests()){
+            abort(403, 'Non sei autorizzato a inviare richieste');
+        }
+
+        $receiverProfile = UserProfile::with('user.roles')->findOrFail($validate['receiver_profile_id']);
+
         if ((int) $senderProfile->id === (int) $validate['receiver_profile_id']) {
             return back()->withErrors([
                 'receiver_profile_id' => 'Non puoi inviare una richiesta a te stesso'
+            ]);
+        }
+
+        $allowedTypes = $this->allowedRequestTypes($senderProfile, $receiverProfile);
+
+        if (! in_array($validate['request_type'], $allowedTypes, true)) {
+            return back()->withErrors([
+                'request_type' => 'La categoria di professionisti a cui è iscritto questo profilo non permette di inviare questa tipo di richiesta',
             ]);
         }
 
@@ -44,9 +60,10 @@ class ProfileRequestController extends Controller
             ->with('status', 'request-sent');
     }
     public function accept(ProfileRequest $profileRequest, Request $request): RedirectResponse {
+        
         $profile = $request->user()->profile;
-
-        if ($profileRequest->receiver_profile_id !== $profile->id) {
+        
+        if ((int)$profileRequest->receiver_profile_id !== (int)$profile->id) {
             abort(403);
         }
 
@@ -62,7 +79,7 @@ class ProfileRequestController extends Controller
     public function reject(ProfileRequest $profileRequest, Request $request): RedirectResponse {
         $profile = $request->user()->profile;
 
-        if ($profileRequest->receiver_profile_id !== $profile->id) {
+        if ((int)$profileRequest->receiver_profile_id !== (int)$profile->id) {
             abort(403);
         }
 
@@ -74,5 +91,56 @@ class ProfileRequestController extends Controller
         return back()->with('status', 'request-rejected');
     }
 
-    
+    private function allowedRequestTypes(UserProfile $sender, UserProfile $receiver): array
+{
+    $senderRoles = $sender->user->activeRoles()->all();
+    $receiverRoles = $receiver->user->activeRoles()->all();
+
+    $senderIs = fn (string $role) => in_array($role, $senderRoles, true);
+    $receiverIs = fn (string $role) => in_array($role, $receiverRoles, true);
+
+    if ($senderIs('artist')) {
+        $allowed = [];
+
+        if ($receiverIs('studio')) {
+            $allowed[] = 'booking';
+        }
+
+        if ($receiverIs('artist') || $receiverIs('producer')) {
+            $allowed[] = 'collaboration';
+        }
+
+        if ($receiverIs('venue')) {
+            $allowed[] = 'live-candidacy';
+        }
+
+        return $allowed;
+    }
+
+    if ($senderIs('producer')) {
+        $allowed = [];
+
+        if ($receiverIs('studio')) {
+            $allowed[] = 'booking';
+        }
+
+        if ($receiverIs('artist') || $receiverIs('producer')) {
+            $allowed[] = 'collaboration';
+        }
+
+        return $allowed;
+    }
+
+    if ($senderIs('label')) {
+        $allowed = [];
+
+        if ($receiverIs('artist') || $receiverIs('producer')) {
+            $allowed[] = 'roster-proposal';
+        }
+
+        return $allowed;
+    }
+
+    return [];
+}
 }

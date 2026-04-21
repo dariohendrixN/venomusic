@@ -38,7 +38,7 @@
         <div class="container d-flex justify-content-center mt-10 py-3">
          
         <!-- Copyright -->
-        <div class="text-center text-white p-3 rounded" style="background-color: rgba(0, 0, 0, 0.2);">
+        <div class="text-center text-white p-3 sticky-bottom m-0 rounded" style="background-color: rgba(0, 0, 0, 0.2);">
           © 2026 Venomusic
         </div>
         <!-- Copyright -->
