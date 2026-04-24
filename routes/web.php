@@ -95,6 +95,12 @@ Route::patch('/profile/links', [ProfileController::class, 'updateLinks'])
 Route::post('/profile/collaborations', [ProfileCollaborationController::class, 'store'])
     ->middleware('auth')
     ->name('profile.collaborations.store');
+    Route::patch('/profile/collaborations/{collaboration}/accept', [ProfileCollaborationController::class, 'accept'])
+        ->name('profile.collaborations.accept');
+
+    Route::patch('/profile/collaborations/{collaboration}/reject', [ProfileCollaborationController::class, 'reject'])
+        ->name('profile.collaborations.reject');
+        
     Route::delete('/profile/collaborations/{collaboration}', [ProfileCollaborationController::class, 'destroy'])
         ->middleware('auth')
         ->name('profile.collaborations.destroy');

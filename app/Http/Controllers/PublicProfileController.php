@@ -25,9 +25,41 @@ class PublicProfileController extends Controller
             $receiver = $profile;
             $allowedRequestTypes = $this->allowedRequestTypes($sender, $receiver);
         }
+
+        $acceptedCollaborations = $profile->collaborations()
+            ->with('collaborator')
+            ->where('status', 'accepted')
+            ->get()
+            ->merge(
+                $profile->receivedCollaborations()
+                    ->with('profile')
+                    ->where('status', 'accepted')
+                    ->get()
+            );
+
+            
         return view('profiles.show', [
             'profile' => $profile,
-            'allowedRequestTypes' => $allowedRequestTypes
+            'allowedRequestTypes' => $allowedRequestTypes,
+
+
+
+            
+            'receivedRequests' => $profile->receivedRequests()
+                ->with('sender')
+                ->latest()
+                ->get(),
+
+            'sentRequests' => $profile->sentRequests()
+                ->with('receiver')
+                ->latest()
+                ->get(),
+
+            'pendingCollaborations' => $profile->receivedCollaborations()
+                ->where('status', 'pending')
+                ->get(),
+
+            'acceptedCollaborations' => $acceptedCollaborations,
         ]);
     }
 

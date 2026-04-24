@@ -19,6 +19,11 @@ return new class extends Migration
             $table->foreignId('collaborator_profile_id')
                 ->constrained('user_profiles')
                 ->cascadeOnDelete();
+            $table->foreignId('initiator_profile_id')
+                ->constrained('user_profiles')
+                ->cascadeOnDelete();
+            $table->string('status')->default('pending');
+            $table->timestamp('approved_at')->nullable();
             $table->string('collaboration_type');
             $table->string('project_title')
                 ->nullable();
@@ -30,6 +35,8 @@ return new class extends Migration
                 ->nullable();
             $table->timestamps();
         });
+
+        
     }
 
     /**

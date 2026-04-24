@@ -59,12 +59,12 @@
             <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Immagine profilo"
                 class="img-thumbnail border-none" style="max-width: 300px;">
         @else
-            <div class="card d-flex justify-content-center mx-auto">
-                <p class="text-muted mx-1">Nessuna immagine caricata</p>
+            <div class="card d-flex justify-content-center border-none mx-auto">
+                <p class="text-muted bg-warning-subtle rounded py-1 px-2">Nessuna immagine caricata</p>
             </div>
         @endif
 
-       
+
     </div>
 
     @unless (auth()->user()->canUploadMedia())
@@ -99,7 +99,11 @@
             @endif
         </div>
     @else
-        <p class="text-muted mt-4">Nessuna immagine nella gallery.</p>
+    <div class="d-flex justify-content-center">
+        <div class="text-center my-3 w-50">
+            <p class="text-muted border-bottom pb-4 mt-4">Nessuna immagine nella gallery.</p>
+        </div>
+    </div>
     @endif
 
     @if (auth()->user()->canUploadTracks())
@@ -167,57 +171,76 @@
         </div>
     @endunless
 
-    <div class="card shadow-sm mx-8 mt-3">
-        <h4 class="card-header">
-            Collaborazioni attive / storiche
-        </h4>
+    @if (auth()->user()->canManageCollaborations())
+        <div class="card shadow-sm mx-8 mt-3">
+            <h4 class="card-header">
+                Storico delle collaborazioni
+            </h4>
 
-        <div class="card-body">
-            @forelse($profile->collaborations as $collaboration)
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            {{ $collaboration->project_title ?: 'Collaborazione senza titolo' }}
-                        </h5>
+            <div class="card-body d-flex flex-wrap">
+                @forelse($acceptedCollaborations as $collaboration)
+                    @php
+                        $otherProfile =
+                            $collaboration->profile_id !== $profile->id
+                                ? $collaboration->collaborator
+                                : $collaboration->profile;
+                    @endphp
+                    <div class="card mb-3 w-25 border-none">
+                        <div class="card-body bg-tertiary-subtle border-end">
+                            <h5 class="card-title p-2 bg-primary-subtle rounded">
+                                {{ $collaboration->project_title ?: 'Collaborazione senza titolo' }}
+                            </h5>
 
-                        <p class="mb-2">
-                            <strong>Tipo:</strong> {{ $collaboration->collaboration_type }}
-                        </p>
+                            <p class="mb-2 ps-2">
+                                Tipo:
+                                <strong> {{ $collaboration->collaboration_type }} </strong>
+                                </p>
 
-                        <p class="mb-2">
-                            <strong>Collaboratore:</strong>
-                            {{ $collaboration->collaborator->display_name ?? 'Profilo non disponibile' }}
-                        </p>
-
-                        @if ($collaboration->notes)
-                            <p class="mb-2">
-                                <strong>Note:</strong> {{ $collaboration->notes }}
+                            <p class="mb-2 ps-2">
+                                Collaboratore: 
+                                <strong> {{ $otherProfile->display_name ?? 'Profilo non disponibile' }} </strong>
                             </p>
-                        @endif
 
-                        <p class="mb-2">
-                            <strong>Periodo:</strong>
-                            {{ $collaboration->started_at ?? 'N/D' }}
-                            -
-                            {{ $collaboration->ended_at ?? 'In corso' }}
-                        </p>
+                            @if ($collaboration->notes)
+                                <p class="mb-2">
+                                    Note:
+                                    <strong class="text-muted"> {{ $collaboration->notes }} </strong>
+                                </p>
+                            @endif
 
-                        <form method="POST" action="{{ route('profile.collaborations.destroy', $collaboration) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                Elimina collaborazione
-                            </button>
-                        </form>
+                            <p class="mb-2 text-muted card-footer bg-light">
+                                Periodo:
+                                <strong>
+                                 {{ $collaboration->started_at ?? 'N/D' }} 
+                                     
+                                 </strong>
+                                 <br>
+                                 Termine:
+                                 <strong>
+                                     {{ $collaboration->ended_at ?? '(in corso)' }}
+                                 </strong>
+                             </p>
+
+                            <form method="POST"
+                                action="{{ route('profile.collaborations.destroy', $collaboration) }}">
+                                @csrf
+                                @method('DELETE')
+                                <div class="d-flex justify-content-center">
+                                    <button type="submit" class="btn btn-danger btn-sm text-center">
+                                        Elimina collaborazione
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            @empty
-                <div class="text-center">
-                    <p class="text-muted mb-0">Nessuna collaborazione registrata.</p>
-                </div>
-            @endforelse
+                @empty
+                    <div class="text-center">
+                        <p class="text-muted mb-0">Nessuna collaborazione registrata.</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
-    </div>
+    @endif
 
     @unless (auth()->user()->canUploadTracks())
         <div class="alert alert-info mt-4">
@@ -743,7 +766,7 @@
     @if (auth()->user()->canManageCollaborations())
         <div class="card mt-4 shadow-sm">
             <div class="card-header">
-                Collaborazioni
+                Registra Collaborazioni
             </div>
 
             <div class="card-body">
@@ -759,14 +782,27 @@
                     </div>
                 @endif
 
+                <small class="card-text text-center border-none mb-3 mx-auto">
+                    <p class="alert alert-warning fw-light text-muted">
+                        Usa questa sezione per registrare collaborazioni, già attive o concluse, visibili nel tuo
+                        profilo.
+                    </p>
+                </small>
+
                 <form method="POST" action="{{ route('profile.collaborations.store') }}">
                     @csrf
 
                     <div class="mb-3">
                         <label for="collaborator-search" class="form-label">Cerca collaboratore</label>
 
-                        <input type="text" class="form-control" id="collaborator-search"
-                            placeholder="Alias, nome, cognome o località" autocomplete="off">
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control" id="collaborator-search"
+                                placeholder="Alias, nome, cognome o località" autocomplete="off">
+
+                            <button type="button" id="collaborator-search-button" class="btn btn-outline-primary">
+                                Cerca
+                            </button>
+                        </div>
 
                         <input type="hidden" id="collaborator_profile_id" name="collaborator_profile_id">
 
@@ -790,7 +826,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="project_title" class="form-label">Titolo progetto</label>
+                        <label for="project_title" class="form-label">Titolo</label>
                         <input type="text" class="form-control" id="project_title" name="project_title">
                     </div>
 
@@ -810,9 +846,51 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">
-                        Aggiungi collaborazione
+                        Registra collaborazione
                     </button>
                 </form>
+            </div>
+
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header">
+                    Collaborazioni da confermare
+                </div>
+
+                <div class="card-body">
+                    @forelse($pendingCollaborations as $collab)
+                        <div class="border rounded p-3 mb-3">
+                            <strong>{{ $collab->initiator->display_name }}</strong>
+
+                            <div class="small text-muted">
+                                Tipo: {{ $collab->collaboration_type }}
+                            </div>
+
+                            @if ($collab->project_title)
+                                <div><strong>{{ $collab->project_title }}</strong></div>
+                            @endif
+
+                            @if ($collab->notes)
+                                <div>{{ $collab->notes }}</div>
+                            @endif
+
+                            <div class="mt-3 d-flex gap-2">
+                                <form method="POST" action="{{ route('profile.collaborations.accept', $collab) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-success btn-sm">Accetta</button>
+                                </form>
+
+                                <form method="POST" action="{{ route('profile.collaborations.reject', $collab) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-danger btn-sm">Rifiuta</button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-muted">Nessuna collaborazione da confermare.</p>
+                    @endforelse
+                </div>
             </div>
         </div>
     @endif
@@ -1002,17 +1080,134 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const collaboratorInput = document.getElementById('collaborator-search');
+            const collaboratorButton = document.getElementById('collaborator-search-button');
             const collaboratorHidden = document.getElementById('collaborator_profile_id');
             const collaboratorBox = document.getElementById('collaborator-suggestions');
+            const collaborationTypeSelect = document.getElementById('collaboration_type');
 
-            if (!collaboratorInput || !collaboratorHidden || !collaboratorBox) return;
+            if (!collaboratorInput || !collaboratorButton || !collaboratorBox) return;
+
+            const currentUserRoles = @json(auth()->user()->visibleActiveRoleNames()->values()->all());
+
+            function normalizeRoles(roles) {
+                if (!Array.isArray(roles)) return [];
+
+                return roles.map(role => {
+                    if (typeof role === 'string') return role;
+                    if (role && role.name) return role.name;
+
+                    return null;
+                }).filter(Boolean);
+            }
+
+            function getAllowedCollaborationTypes(myRoles, collaboratorRoles) {
+                myRoles = normalizeRoles(myRoles);
+                collaboratorRoles = normalizeRoles(collaboratorRoles);
+
+                const hasMe = (role) => myRoles.includes(role);
+                const hasOther = (role) => collaboratorRoles.includes(role);
+
+                const allowed = new Set();
+
+                const meIsLabel = hasMe('label');
+                const otherIsLabel = hasOther('label');
+                const meIsArtist = hasMe('artist');
+                const otherIsArtist = hasOther('artist');
+                const meIsProducer = hasMe('producer');
+                const otherIsProducer = hasOther('producer');
+
+                if ((meIsLabel && (otherIsArtist || otherIsProducer)) || (otherIsLabel && (meIsArtist ||
+                        meIsProducer))) {
+                    allowed.add('label-support');
+                }
+
+                if (meIsProducer && otherIsProducer) {
+                    allowed.add('production');
+                    allowed.add('co-production');
+                    allowed.add('remix');
+                }
+
+                if (meIsArtist && otherIsArtist) {
+                    allowed.add('featuring');
+                    allowed.add('songwriting');
+                    allowed.add('remix');
+                }
+
+                const artistProducerPair =
+                    (meIsArtist && otherIsProducer) ||
+                    (meIsProducer && otherIsArtist);
+
+                if (artistProducerPair) {
+                    allowed.add('featuring');
+                    allowed.add('production');
+                    allowed.add('songwriting');
+                    allowed.add('remix');
+                }
+
+                return Array.from(allowed);
+            }
+
+            function collaborationTypeLabel(type) {
+                switch (type) {
+                    case 'featuring':
+                        return 'Featuring';
+                    case 'production':
+                        return 'Produzione';
+                    case 'co-production':
+                        return 'Co-produzione';
+                    case 'label-support':
+                        return 'Supporto etichetta';
+                    case 'songwriting':
+                        return 'Songwriting';
+                    case 'remix':
+                        return 'Remix';
+                    default:
+                        return type;
+                }
+            }
+
+            function renderCollaborationTypeOptions(allowedTypes) {
+                collaborationTypeSelect.innerHTML = '';
+
+                if (!allowedTypes.length) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Nessun tipo disponibile per questa combinazione di ruoli';
+                    collaborationTypeSelect.appendChild(option);
+                    return;
+                }
+
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = 'Seleziona tipo collaborazione';
+                collaborationTypeSelect.appendChild(placeholder);
+
+                allowedTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = collaborationTypeLabel(type);
+                    collaborationTypeSelect.appendChild(option);
+                });
+            }
 
             async function loadCollaborators(query = '') {
                 try {
                     const res = await fetch(`/profile/collaborators/search?q=${encodeURIComponent(query)}`);
-                    const data = await res.json();
 
+                    if (!res.ok) {
+                        collaboratorBox.innerHTML =
+                            '<div class="list-group-item text-danger">Errore nel caricamento risultati.</div>';
+                        return;
+                    }
+
+                    const data = await res.json();
                     collaboratorBox.innerHTML = '';
+
+                    if (!data.length) {
+                        collaboratorBox.innerHTML =
+                            '<div class="list-group-item text-muted">Nessun profilo trovato.</div>';
+                        return;
+                    }
 
                     data.forEach(profile => {
                         const item = document.createElement('button');
@@ -1036,25 +1231,44 @@
                                 .full_name ?? 'Profilo selezionato';
                             collaboratorHidden.value = profile.id;
                             collaboratorBox.innerHTML = '';
+
+                            const allowedTypes = getAllowedCollaborationTypes(currentUserRoles,
+                                profile.roles || []);
+                            renderCollaborationTypeOptions(allowedTypes);
                         });
 
                         collaboratorBox.appendChild(item);
                     });
                 } catch (error) {
                     console.error('Collaborator search error:', error);
+                    collaboratorBox.innerHTML =
+                        '<div class="list-group-item text-danger">Errore nella ricerca collaboratori.</div>';
                 }
             }
 
-            loadCollaborators('');
+            renderCollaborationTypeOptions([]);
 
-            collaboratorInput.addEventListener('focus', () => {
-                if (collaboratorInput.value.trim() === '') {
-                    loadCollaborators('');
+            collaboratorButton.addEventListener('click', async () => {
+                collaboratorHidden.value = '';
+                collaboratorBox.innerHTML =
+                    '<div class="list-group-item text-muted">Caricamento...</div>';
+                renderCollaborationTypeOptions([]);
+                await loadCollaborators(collaboratorInput.value.trim());
+            });
+
+
+
+
+            collaboratorInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    collaboratorButton.click();
                 }
             });
 
             collaboratorInput.addEventListener('keyup', () => {
                 collaboratorHidden.value = '';
+                renderCollaborationTypeOptions([]);
                 loadCollaborators(collaboratorInput.value.trim());
             });
         });

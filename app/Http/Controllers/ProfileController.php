@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,19 +20,42 @@ class ProfileController extends Controller
             'profile.images',
             'profile.genres',
             'profile.tracks.genre',
-            'profile.collaborations.collaborator.user');
-            
+            'profile.collaborations.collaborator.user',
+            'profile.receivedRequests.sender',
+            'profile.sentRequests.receiver'
+        );
+
+        $acceptedCollaborations = $user->profile->collaborations()
+            ->with('collaborator')
+            ->where('status', 'accepted')
+            ->get()
+            ->merge(
+                $user->profile->receivedCollaborations()
+                    ->with('profile')
+                    ->where('status', 'accepted')
+                    ->get()
+            );
+
         return view('profile.edit', [
             'user' => $user,
+
             'profile' => $user->profile,
+            
             'receivedRequests' => $user->profile->receivedRequests()
                 ->with('sender')
                 ->latest()
                 ->get(),
+
             'sentRequests' => $user->profile->sentRequests()
                 ->with('receiver')
                 ->latest()
                 ->get(),
+
+            'pendingCollaborations' => $user->profile->receivedCollaborations()
+                ->where('status', 'pending')
+                ->get(),
+
+            'acceptedCollaborations' => $acceptedCollaborations,
         ]);
     }
 
@@ -54,7 +76,7 @@ class ProfileController extends Controller
             'province' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:255'],
-            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10500'], 
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10500'],
             // links sound
             'qobuz_url' => ['nullable', 'url'],
             'bandcamp_url' => ['nullable', 'url'],
@@ -92,7 +114,7 @@ class ProfileController extends Controller
             'youtube_music_url' => $validated['youtube_music_url'] ?? null,
             'apple_music_url' => $validated['apple_music_url'] ?? null,
             'spotify_url' => $validated['spotify_url'] ?? null,
-            
+
         ];
 
         if ($request->hasFile('profile_image') && ! $request->user()->canUploadMedia()) {
@@ -113,31 +135,31 @@ class ProfileController extends Controller
     }
 
     public function updateLinks(Request $request): RedirectResponse
-{
-    $validated = $request->validate([
-        'qobuz_url' => ['nullable', 'url'],
-        'bandcamp_url' => ['nullable', 'url'],
-        'deezer_url' => ['nullable', 'url'],
-        'soundcloud_url' => ['nullable', 'url'],
-        'amazon_music_url' => ['nullable', 'url'],
-        'youtube_music_url' => ['nullable', 'url'],
-        'apple_music_url' => ['nullable', 'url'],
-        'spotify_url' => ['nullable', 'url'],
-    ]);
+    {
+        $validated = $request->validate([
+            'qobuz_url' => ['nullable', 'url'],
+            'bandcamp_url' => ['nullable', 'url'],
+            'deezer_url' => ['nullable', 'url'],
+            'soundcloud_url' => ['nullable', 'url'],
+            'amazon_music_url' => ['nullable', 'url'],
+            'youtube_music_url' => ['nullable', 'url'],
+            'apple_music_url' => ['nullable', 'url'],
+            'spotify_url' => ['nullable', 'url'],
+        ]);
 
-    $request->user()->profile->update([
-        'qobuz_url' => $validated['qobuz_url'] ?? null,
-        'bandcamp_url' => $validated['bandcamp_url'] ?? null,
-        'deezer_url' => $validated['deezer_url'] ?? null,
-        'soundcloud_url' => $validated['soundcloud_url'] ?? null,
-        'amazon_music_url' => $validated['amazon_music_url'] ?? null,
-        'youtube_music_url' => $validated['youtube_music_url'] ?? null,
-        'apple_music_url' => $validated['apple_music_url'] ?? null,
-        'spotify_url' => $validated['spotify_url'] ?? null,
-    ]);
+        $request->user()->profile->update([
+            'qobuz_url' => $validated['qobuz_url'] ?? null,
+            'bandcamp_url' => $validated['bandcamp_url'] ?? null,
+            'deezer_url' => $validated['deezer_url'] ?? null,
+            'soundcloud_url' => $validated['soundcloud_url'] ?? null,
+            'amazon_music_url' => $validated['amazon_music_url'] ?? null,
+            'youtube_music_url' => $validated['youtube_music_url'] ?? null,
+            'apple_music_url' => $validated['apple_music_url'] ?? null,
+            'spotify_url' => $validated['spotify_url'] ?? null,
+        ]);
 
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
 
     /**
      * Delete the user's account.

@@ -35,9 +35,16 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
+                
                 <span class="text-sm text-gray-700">
                     {{ Auth::user()->profile?->display_name ?? Auth::user()->email }}
+                    
                 </span>
+                <div class="my-1">
+                    @foreach (Auth::user()->visibleActiveRoleNames() as $role)
+                        <span class="inline-flex items-center rounded-full bg-blue-200 px-2 py-0.5 text-xs font-medium text-blue-800">{{__('roles.' . $role->name) }}</span>
+                    @endforeach
+                </div>
             
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

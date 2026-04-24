@@ -61,6 +61,61 @@
             </div>
         </div>
 
+        {{-- collaborazioni --}}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">Collaborazioni</div>
+            <div class="card-body d-flex flex-wrap">
+                @forelse($acceptedCollaborations as $collaboration)
+                    @php
+                        $otherProfile =
+                            $collaboration->profile_id === $profile->id
+                                ? $collaboration->collaborator
+                                : $collaboration->profile;
+                    @endphp
+                    <div class="border-end p-3 mb-1 w-25">
+                        <h5 class="card-title bg-primary-subtle p-2 text-center rounded">{{ $collaboration->project_title ?: 'Collaborazione senza titolo' }}</h5>
+
+
+                        <div class="small text-center text-muted mb-3">
+                            Tipo: {{ $collaboration->collaboration_type }}
+                        </div>
+
+                        <div class="mt-2">
+                            Con: 
+                            <strong class="text-primary-emphasis text-decoration-underline text-center">
+                                <a href="{{ route('profiles.show', $otherProfile) }}">
+                                {{ $otherProfile->display_name ?? 'Profilo non disponibile' }}
+                            </a>
+                            </strong>
+                        </div>
+
+                        @if ($collaboration->notes)
+                            <div class="mt-2">
+                                <strong>
+                                Note: {{ $collaboration->notes }}
+                            </strong>
+                            </div>
+                        @endif
+
+                        <div class="card-footer bg-body-tertiary mt-2 small text-muted">
+                           Periodo:
+                           <strong>
+                            {{ $collaboration->started_at ?? 'N/D' }} 
+                                
+                            </strong>
+                            <br>
+                            Termine:
+                            <strong>
+                                {{ $collaboration->ended_at ?? '(in corso)' }}
+                            </strong>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-muted mb-0">Nessuna collaborazione.</p>
+                @endforelse
+            </div>
+        </div>
+
         {{-- link piattaforme --}}
         <div class="card shadow-sm mb-4">
             <div class="card-header">Piattaforme</div>

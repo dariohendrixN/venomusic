@@ -72,6 +72,10 @@ class UserProfile extends Model
     {
         return $this->hasMany(ProfileCollaboration::class, 'collaborator_profile_id');
     }
+
+    public function receivedCollaborations() {
+        return $this->hasMany(ProfileCollaboration::class, 'collaborator_profile_id');
+    }
     public function sentRequests()
     {
         return $this->hasMany(ProfileRequest::class, 'sender_profile_id');
